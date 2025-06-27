@@ -1,0 +1,18 @@
+bootJar {enabled = true}
+jar {enabled = false}
+
+dependencies {
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Jackson (for common payloads, util)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

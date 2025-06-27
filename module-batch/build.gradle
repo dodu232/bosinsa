@@ -1,0 +1,17 @@
+bootJar {enabled = true}
+jar {enabled = false}
+
+dependencies {
+    implementation project(':module-domain')
+    implementation project(':module-common')
+
+    // Spring Batch / Scheduler
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
