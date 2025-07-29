@@ -11,11 +11,11 @@ public class AuthFacade {
 
     private final UserRepository userRepository;
 
-    public void signUp() {
-        User user = User.builder()
-            .email("test@gmail.com")
-            .build();
+    public boolean isEmailDuplicated(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
+    public void save(User user) {
         userRepository.save(user);
     }
 }
