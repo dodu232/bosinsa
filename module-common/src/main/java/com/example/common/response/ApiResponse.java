@@ -1,5 +1,8 @@
 package com.example.common.response;
 
+import lombok.Getter;
+
+@Getter
 public class ApiResponse<T> {
 
 	private boolean success;
