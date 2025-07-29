@@ -2,6 +2,7 @@ package com.example.api.controller.auth;
 
 import com.example.api.dto.auth.SignupRequest;
 import com.example.api.usecase.auth.SignupUseCase;
+import com.example.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,10 @@ public class AuthController {
     private final SignupUseCase signupUseCase;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(
+    public ResponseEntity<ApiResponse<Void>> signUp(
         @Valid @RequestBody SignupRequest request
     ){
         signupUseCase.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(null));
     }
 }
