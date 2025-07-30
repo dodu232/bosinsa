@@ -14,5 +14,7 @@ public class UserDomainService {
 		return passwordEncryptor.encode(password);
 	}
 
-
+	public boolean isPasswordMatch(String password, String encryptedPassword) {
+		return passwordEncryptor.matches(password, encryptedPassword);
+	}
 }
