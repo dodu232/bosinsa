@@ -9,6 +9,7 @@ import com.example.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class SignupUseCase {
 	private final AuthFacade authFacade;
 	private final UserDomainService userDomainService;
 
+	@Transactional
 	public void signUp(SignupRequest request) {
 		if (authFacade.isEmailDuplicated(request.getEmail())) {
 			throw new ApiException("중복된 이메일", ErrorType.INVALID_PARAMETER, HttpStatus.BAD_REQUEST);
