@@ -1,6 +1,8 @@
 package com.example.api.controller.auth;
 
+import com.example.api.dto.auth.SigninRequest;
 import com.example.api.dto.auth.SignupRequest;
+import com.example.api.usecase.auth.SigninUseCase;
 import com.example.api.usecase.auth.SignupUseCase;
 import com.example.common.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final SignupUseCase signupUseCase;
+    private final SigninUseCase signinUseCase;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signUp(
@@ -25,5 +28,15 @@ public class AuthController {
     ){
         signupUseCase.signUp(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(null));
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<ApiResponse<Void>> signIn(
+        @Valid @RequestBody SigninRequest request
+    ){
+        String token = signinUseCase.signIn(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .header("Authorization", "Bearer " + token)
+            .body(ApiResponse.success(null));
     }
 }

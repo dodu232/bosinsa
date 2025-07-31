@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class SignupRequest {
+public class SigninRequest {
 
 	@Email
 	@NotBlank
@@ -17,7 +17,4 @@ public class SignupRequest {
 	@NotBlank
 	@Size(min = 4, max = 12)
 	private String password;
-
-	@NotBlank
-	private String nickname;
 }
