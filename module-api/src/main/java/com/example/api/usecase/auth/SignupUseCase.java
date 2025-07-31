@@ -1,14 +1,10 @@
 package com.example.api.usecase.auth;
 
-import com.example.api.dto.auth.SigninRequest;
 import com.example.api.dto.auth.SignupRequest;
 import com.example.api.facade.auth.AuthFacade;
-import com.example.common.exception.ApiException;
-import com.example.common.exception.ErrorType;
 import com.example.domain.entity.User;
 import com.example.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +17,7 @@ public class SignupUseCase {
 
 	@Transactional
 	public void signUp(SignupRequest dto) {
-		if (authFacade.isEmailDuplicated(dto.getEmail())) {
-			throw new ApiException("중복된 이메일", ErrorType.INVALID_PARAMETER, HttpStatus.BAD_REQUEST);
-		}
+		authFacade.isEmailDuplicated(dto.getEmail());
 
 		String encrypted = userDomainService.encrypt(dto.getPassword());
 		User user = User.of(dto.getEmail(), encrypted, dto.getNickname());
