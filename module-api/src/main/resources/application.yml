@@ -1,11 +1,35 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   profiles:
     active: local
     include:
-    - common
-    - domain
+      - common
+      - domain
     group:
       local: local, domain-local, common-local
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+        registration:
+          kakao:
+            client-id: 3db5cb5e05e2b38a65dce77c0329894e
+            client-secret: 8mCB6uxvHVZZ2gW0IL1B4XzWoV3zNTvu
+            redirect-uri: http://localhost:8081/api/v1/auth/social/kakao
+            authorization-grant-type: authorization_code
+            client-authentication-method: POST
+            client-name: Kakao
+            scope:
+              - name
+              - profile_nickname
+              - account_email
