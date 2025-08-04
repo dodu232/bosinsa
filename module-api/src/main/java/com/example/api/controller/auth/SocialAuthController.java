@@ -25,4 +25,5 @@ public class SocialAuthController {
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
 }
