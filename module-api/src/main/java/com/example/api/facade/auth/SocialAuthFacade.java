@@ -7,7 +7,9 @@ import com.example.domain.service.UserDomainService;
 import com.example.external.social.OAuthService;
 import com.example.external.social.SocialUserInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class SocialAuthFacade {
 		return oAuthService.socialLogin(provider, code);
 	}
 
+	@Transactional
 	public Long getOrCreateSocialUser(SocialUserInfo info, String provider) {
 		String email = info.getEmail();
 		if (userFacade.existsByEmail(email)) {
@@ -28,11 +31,16 @@ public class SocialAuthFacade {
 		}
 
 		String dummyPw = userDomainService.generatedDummyPw();
-		User user = User.of(info.getEmail(), dummyPw, info.getNickname(),
-			LoginProvider.from(provider));
 
-		userFacade.save(user);
+		try {
+			User user = User.of(info.getEmail(), dummyPw, info.getNickname(),
+				LoginProvider.from(provider));
 
-		return user.getId();
+			userFacade.save(user);
+
+			return user.getId();
+		} catch (DataIntegrityViolationException e) {
+			return userFacade.findByEmail(email).getId();
+		}
 	}
 }
