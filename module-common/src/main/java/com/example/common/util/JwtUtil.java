@@ -15,17 +15,17 @@ public class JwtUtil {
 	private final SecretKey key;
 
 	public JwtUtil(
-	@Value("${jwt.secret}") String secret,
-	@Value("${jwt.expired}") long expired
+		@Value("${jwt.secret}") String secret,
+		@Value("${jwt.expired}") long expired
 	) {
 		byte[] keyBytes = Decoders.BASE64.decode(secret);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 		this.exp = expired;
 	}
 
-	public String generateToken(String email) {
+	public String generateToken(String userId) {
 		return Jwts.builder()
-			.subject(email)
+			.subject(userId)
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + exp))
 			.signWith(key)

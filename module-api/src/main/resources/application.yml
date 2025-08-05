@@ -1,11 +1,14 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   profiles:
     active: local
     include:
-    - common
-    - domain
+      - common
+      - domain
     group:
-      local: local, domain-local, common-local
+      local: local, domain-local, common-local, external-local
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html

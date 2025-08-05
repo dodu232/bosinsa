@@ -1,4 +1,4 @@
-package com.example.api.facade.auth;
+package com.example.api.facade.user;
 
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AuthFacade {
+public class UserFacade {
 
 	private final UserRepository userRepository;
 
@@ -18,7 +18,6 @@ public class AuthFacade {
 		if (userRepository.existsByEmail(email)) {
 			throw new ApiException("중복된 이메일", ErrorType.INVALID_PARAMETER, HttpStatus.BAD_REQUEST);
 		}
-		;
 	}
 
 	public void save(User user) {
@@ -29,6 +28,10 @@ public class AuthFacade {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new ApiException("존재하지 않는 이메일", ErrorType.INVALID_PARAMETER,
 				HttpStatus.BAD_REQUEST));
+	}
+
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
 	}
 
 }
