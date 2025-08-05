@@ -1,7 +1,7 @@
 package com.example.api.usecase.auth;
 
 import com.example.api.dto.auth.SigninRequest;
-import com.example.api.facade.auth.AuthFacade;
+import com.example.api.facade.user.UserFacade;
 import com.example.common.util.JwtUtil;
 import com.example.domain.entity.User;
 import com.example.domain.service.UserDomainService;
@@ -13,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SigninUseCase {
 
-	private final AuthFacade authFacade;
+	private final UserFacade userFacade;
 	private final JwtUtil jwtUtil;
 	private final UserDomainService userDomainService;
 
 	@Transactional(readOnly = true)
 	public String signIn(SigninRequest dto) {
-		User user = authFacade.findByEmail(dto.getEmail());
+		User user = userFacade.findByEmail(dto.getEmail());
 
 		userDomainService.isPasswordMatch(dto.getPassword(), user.getPassword());
 

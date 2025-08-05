@@ -8,4 +8,5 @@ import lombok.Getter;
 public class SocialUserInfo {
 
 	private String email;
+	private String nickname;
 }

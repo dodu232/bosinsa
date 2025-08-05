@@ -2,8 +2,6 @@ package com.example.external.social;
 
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
-import com.example.external.adapter.social.KakaoSocialAdapter;
-import com.example.external.adapter.social.SocialLoginAdapter;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,23 +9,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class OAuthService {
 
-	private final Map<String, SocialLoginAdapter> socialLoginStrategyMap;
+	private final Map<String, SocialLoginService> socialLoginStrategyMap;
 
 	public OAuthService(
-		KakaoSocialAdapter kakaoSocialAdapter
+		KakaoSocialService kakaoSocialService
 	) {
 		this.socialLoginStrategyMap = Map.of(
-			"kakao", kakaoSocialAdapter
+			"kakao", kakaoSocialService
 		);
 	}
 
 	public SocialUserInfo socialLogin(String provider, String code) {
-		SocialLoginAdapter adapter = socialLoginStrategyMap.get(provider);
-		if (adapter == null) {
+		SocialLoginService service = socialLoginStrategyMap.get(provider);
+		if (service == null) {
 			throw new ApiException("지원하지 않는 소셜 로그인 플랫폼입니다.", ErrorType.INVALID_PARAMETER,
 				HttpStatus.BAD_REQUEST);
 		}
-		return new SocialLoginContext().login(adapter, code);
+		return new SocialLoginContext().login(service, code);
 	}
 
 }

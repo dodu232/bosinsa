@@ -1,8 +1,9 @@
 package com.example.api.usecase.auth;
 
 import com.example.api.dto.auth.SignupRequest;
-import com.example.api.facade.auth.AuthFacade;
+import com.example.api.facade.user.UserFacade;
 import com.example.domain.entity.User;
+import com.example.domain.enums.LoginProvider;
 import com.example.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,17 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SignupUseCase {
 
-	private final AuthFacade authFacade;
+	private final UserFacade userFacade;
 	private final UserDomainService userDomainService;
 
 	@Transactional
 	public void signUp(SignupRequest dto) {
-		authFacade.isEmailDuplicated(dto.getEmail());
+		userFacade.isEmailDuplicated(dto.getEmail());
 
 		String encrypted = userDomainService.encrypt(dto.getPassword());
-		User user = User.of(dto.getEmail(), encrypted, dto.getNickname());
+		User user = User.of(dto.getEmail(), encrypted, dto.getNickname(), LoginProvider.LOCAL);
 
-		authFacade.save(user);
+		userFacade.save(user);
 	}
 
 }

@@ -1,7 +1,6 @@
-package com.example.external.adapter.social;
+package com.example.external.social;
 
 import com.example.external.dto.KakaoUserInfoResponse;
-import com.example.external.social.SocialUserInfo;
 import com.example.external.social.kakao.KakaoApiClient;
 import com.example.external.social.kakao.KakaoAuthClient;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component("kakao")
 @RequiredArgsConstructor
-public class KakaoSocialAdapter implements SocialLoginAdapter {
+public class KakaoSocialService implements SocialLoginService {
 
 	private final KakaoAuthClient authClient;
 	private final KakaoApiClient apiClient;
@@ -29,7 +28,7 @@ public class KakaoSocialAdapter implements SocialLoginAdapter {
 
 	private String getToken(String code) {
 		return authClient.getToken(
-			"Content-Type: application/x-www-form-urlencoded;charset=utf-8",
+			"application/x-www-form-urlencoded;charset=utf-8",
 			"authorization_code",
 			clientId,
 			redirectUri,
@@ -44,8 +43,7 @@ public class KakaoSocialAdapter implements SocialLoginAdapter {
 
 		KakaoUserInfoResponse info = apiClient.getUserInfo(token, contentType);
 
-		return new SocialUserInfo(info.kakaoAccount.email);
+		return new SocialUserInfo(info.kakaoAccount.email, info.kakaoAccount.profile.nickName);
 	}
-
-
+	
 }
