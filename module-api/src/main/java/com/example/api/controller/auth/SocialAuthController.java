@@ -1,6 +1,7 @@
 package com.example.api.controller.auth;
 
 import com.example.api.usecase.auth.SocialLoginUseCase;
+import com.example.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,13 @@ public class SocialAuthController {
 	private final SocialLoginUseCase socialLoginUseCase;
 
 	@GetMapping("/{provider}")
-	public ResponseEntity<?> redirect(@PathVariable String provider,
+	public ResponseEntity<ApiResponse<Void>> redirect(@PathVariable String provider,
 		@RequestParam("code") String code) {
 
-		socialLoginUseCase.socialLogin(provider, code);
+		String token = socialLoginUseCase.socialLogin(provider, code);
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.header("Authorization", "Bearer " + token)
+			.body(ApiResponse.success(null));
 	}
-
 }
