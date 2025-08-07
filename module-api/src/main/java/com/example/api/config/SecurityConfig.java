@@ -38,7 +38,9 @@ public class SecurityConfig {
 					"/api/v1/auth/signup",
 					"/api/v1/auth/signin",
 					"/api/v1/auth/social/**",
-					"/api/v1/auth/kakao/**"
+					"/api/v1/auth/kakao/**",
+					"/api/v1/products",
+					"/api/v1/products/**"
 				).permitAll()
 				.anyRequest().authenticated()
 			)

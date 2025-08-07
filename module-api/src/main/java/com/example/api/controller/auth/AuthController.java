@@ -19,24 +19,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final SignupUseCase signupUseCase;
-    private final SigninUseCase signinUseCase;
+	private final SignupUseCase signupUseCase;
+	private final SigninUseCase signinUseCase;
 
-    @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Void>> signUp(
-        @Valid @RequestBody SignupRequest request
-    ){
-        signupUseCase.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(null));
-    }
+	@PostMapping("/signup")
+	public ResponseEntity<ApiResponse<Void>> signUp(
+		@Valid @RequestBody SignupRequest request
+	) {
+		signupUseCase.signUp(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(null));
+	}
 
-    @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<Void>> signIn(
-        @Valid @RequestBody SigninRequest request
-    ){
-        String token = signinUseCase.signIn(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .header("Authorization", "Bearer " + token)
-            .body(ApiResponse.success(null));
-    }
+	@PostMapping("/signin")
+	public ResponseEntity<ApiResponse<Void>> signIn(
+		@Valid @RequestBody SigninRequest request
+	) {
+		String token = signinUseCase.signIn(request);
+		return ResponseEntity.status(HttpStatus.OK)
+			.header("Authorization", "Bearer " + token)
+			.body(ApiResponse.success(null));
+	}
 }

@@ -24,7 +24,7 @@ public class SocialAuthController {
 
 		String token = socialLoginUseCase.socialLogin(provider, code);
 
-		return ResponseEntity.status(HttpStatus.CREATED)
+		return ResponseEntity.status(HttpStatus.OK)
 			.header("Authorization", "Bearer " + token)
 			.body(ApiResponse.success(null));
 	}
