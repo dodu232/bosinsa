@@ -23,7 +23,6 @@ public class Product extends BaseTime {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
 	@JoinColumn(name = "category_id")
 	@ManyToOne
 	private Category category;

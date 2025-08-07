@@ -1,5 +1,6 @@
 package com.example.api.controller.product;
 
+import com.example.api.dto.product.ProductResponse;
 import com.example.api.usecase.product.ListProductsUseCase;
 import com.example.common.response.ApiResponse;
 import com.example.common.response.PageResponse;
@@ -20,7 +21,7 @@ public class ProductController {
 	private final ListProductsUseCase listProductsUseCase;
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<?>>> getAll(
+	public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getAll(
 		@PageableDefault() Pageable pageable
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
