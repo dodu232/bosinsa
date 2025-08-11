@@ -24,7 +24,7 @@ public class ProductController {
 	private final GetProductDetailUseCase getProductDetailUseCase;
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getAll(
+	public ResponseEntity<ApiResponse<PageResponse<ProductResponse.GetAll>>> getAll(
 		@PageableDefault() Pageable pageable
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
@@ -32,7 +32,7 @@ public class ProductController {
 	}
 
 	@GetMapping("{productId}")
-	public ResponseEntity<ApiResponse<ProductResponse>> getProduct(
+	public ResponseEntity<ApiResponse<ProductResponse.Get>> getProduct(
 		@PathVariable String productId) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponse.success(getProductDetailUseCase.getProduct(productId)));

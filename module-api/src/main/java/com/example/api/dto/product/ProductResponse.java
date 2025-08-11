@@ -3,15 +3,28 @@ package com.example.api.dto.product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
 public class ProductResponse {
 
-	private Long id;
-	private String category;
-	private String name;
-	private String description;
-	private String price;
-	private int stock;
+	@Getter
+	@AllArgsConstructor
+	public static class Get {
+
+		private Long id;
+		private String category;
+		private String name;
+		private String price;
+		private String description;
+		private int stock;
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class GetAll {
+
+		private Long id;
+		private String category;
+		private String name;
+		private String price;
+	}
 
 }

@@ -20,18 +20,16 @@ public class ProductFacade {
 
 	private final ProductRepository productRepository;
 
-	public PageResponse<ProductResponse> getAll(Pageable pageable) {
+	public PageResponse<ProductResponse.GetAll> getAll(Pageable pageable) {
 
 		Page<Product> page = productRepository.findAll(pageable);
 
-		List<ProductResponse> list = page.stream()
-			.map(p -> new ProductResponse(
+		List<ProductResponse.GetAll> list = page.stream()
+			.map(p -> new ProductResponse.GetAll(
 				p.getId(),
 				p.getCategory().getName(),
 				p.getName(),
-				p.getDescription(),
-				p.getPrice().toString(),
-				p.getStock()
+				p.getPrice().toString()
 			))
 			.collect(Collectors.toList());
 
@@ -39,18 +37,18 @@ public class ProductFacade {
 			page.getTotalElements());
 	}
 
-	public ProductResponse getProduct(String productId) {
+	public ProductResponse.Get getProduct(String productId) {
 
 		Product product = productRepository.findById(Long.parseLong(productId))
 			.orElseThrow(() -> new ApiException("존재하지 않는 상품 번호 입니다.", ErrorType.INVALID_PARAMETER,
 				HttpStatus.BAD_REQUEST));
 
-		return new ProductResponse(
+		return new ProductResponse.Get(
 			product.getId(),
 			product.getCategory().getName(),
 			product.getName(),
-			product.getDescription(),
 			product.getPrice().toString(),
+			product.getDescription(),
 			product.getStock()
 		);
 	}

@@ -13,7 +13,7 @@ public class ListProductsUseCase {
 
 	private final ProductFacade productFacade;
 
-	public PageResponse<ProductResponse> getAll(Pageable pageable) {
+	public PageResponse<ProductResponse.GetAll> getAll(Pageable pageable) {
 
 		return productFacade.getAll(pageable);
 	}
