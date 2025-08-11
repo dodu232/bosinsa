@@ -6,8 +6,8 @@ import com.example.common.exception.ErrorType;
 import com.example.common.response.PageResponse;
 import com.example.domain.entity.Product;
 import com.example.domain.repository.ProductRepository;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,17 +24,16 @@ public class ProductFacade {
 
 		Page<Product> page = productRepository.findAll(pageable);
 
-		List<ProductResponse> list = new ArrayList<>();
-
-		for (Product product : page.getContent()) {
-			list.add(new ProductResponse(
-				product.getId(),
-				product.getCategory().getName(),
-				product.getName(),
-				product.getDescription(),
-				product.getStock()
-			));
-		}
+		List<ProductResponse> list = page.stream()
+			.map(p -> new ProductResponse(
+				p.getId(),
+				p.getCategory().getName(),
+				p.getName(),
+				p.getDescription(),
+				p.getPrice().toString(),
+				p.getStock()
+			))
+			.collect(Collectors.toList());
 
 		return PageResponse.of(list, pageable.getPageNumber(), page.getSize(),
 			page.getTotalElements());
@@ -51,6 +50,7 @@ public class ProductFacade {
 			product.getCategory().getName(),
 			product.getName(),
 			product.getDescription(),
+			product.getPrice().toString(),
 			product.getStock()
 		);
 	}
