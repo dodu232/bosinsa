@@ -7,6 +7,7 @@ import com.example.common.response.ApiResponse;
 import com.example.common.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ProductController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<PageResponse<ProductResponse.GetAll>>> getAll(
-		@PageableDefault() Pageable pageable
+		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponse.success(listProductsUseCase.getAll(pageable)));
