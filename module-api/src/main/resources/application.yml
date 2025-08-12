@@ -12,3 +12,7 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+  data:
+    redis:
+      host: localhost
+      port: 6379

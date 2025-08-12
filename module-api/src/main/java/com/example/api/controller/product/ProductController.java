@@ -7,12 +7,14 @@ import com.example.common.response.ApiResponse;
 import com.example.common.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,15 +26,25 @@ public class ProductController {
 	private final GetProductDetailUseCase getProductDetailUseCase;
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getAll(
-		@PageableDefault() Pageable pageable
+	public ResponseEntity<ApiResponse<PageResponse<ProductResponse.GetAll>>> getAll(
+		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponse.success(listProductsUseCase.getAll(pageable)));
 	}
 
+	@GetMapping("/redis")
+	public ResponseEntity<ApiResponse<PageResponse<ProductResponse.GetAll>>> getAllRedis(
+		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+		@RequestParam(required = false) String category
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(ApiResponse.success(
+				listProductsUseCase.getAllRedis(pageable, category)));
+	}
+
 	@GetMapping("{productId}")
-	public ResponseEntity<ApiResponse<ProductResponse>> getProduct(
+	public ResponseEntity<ApiResponse<ProductResponse.Get>> getProduct(
 		@PathVariable String productId) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponse.success(getProductDetailUseCase.getProduct(productId)));

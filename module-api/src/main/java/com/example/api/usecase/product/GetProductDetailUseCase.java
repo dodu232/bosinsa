@@ -11,7 +11,7 @@ public class GetProductDetailUseCase {
 
 	private final ProductFacade productFacade;
 
-	public ProductResponse getProduct(String productId) {
+	public ProductResponse.Get getProduct(String productId) {
 
 		return productFacade.getProduct(productId);
 	}
