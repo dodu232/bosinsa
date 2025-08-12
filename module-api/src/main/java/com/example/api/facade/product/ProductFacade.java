@@ -57,21 +57,26 @@ public class ProductFacade {
 		);
 	}
 
-	public PageResponse<ProductResponse.GetAll> getProducts(Pageable pageable,
-		Map<String, String> params) {
-		String scope = params.containsKey("categoryId")
-			? "cat:" + params.get("categoryId") : "all";
+	public PageResponse<ProductResponse.GetAll> getProducts(Pageable pageable, String category) {
+		String scope;
 
-		// 캐시 먼저 조회
+		if (category == null || category.isBlank() || "all".equals(category)) {
+			scope = "all";
+		} else {
+			scope = "cat:" + category;
+		}
+
+		Map<String, String> key = buildCacheKey(scope, pageable);
+
+		// 캐시 조회
 		PageResponse<ProductResponse.GetAll> cached =
-			cache.get(scope, merge(params, pageable), pageable.getPageNumber(),
-				pageable.getPageSize());
+			cache.get(scope, key, pageable.getPageNumber(), pageable.getPageSize());
 		if (cached != null) {
 			return cached;
 		}
 
 		// 없으면 DB 조회
-		Page<Product> page = productRepository.findAll(pageable);
+		Page<Product> page = productRepository.findByCategory(pageable, category);
 
 		List<ProductResponse.GetAll> list = page.stream()
 			.map(p -> new ProductResponse.GetAll(
@@ -86,20 +91,18 @@ public class ProductFacade {
 			PageResponse.of(list, pageable.getPageNumber(), page.getSize(),
 				page.getTotalElements());
 
-		cache.put(scope, merge(params, pageable), pageable.getPageNumber(), pageable.getPageSize(),
+		cache.put(scope, key, pageable.getPageNumber(), pageable.getPageSize(),
 			resp);
 
 		return resp;
 	}
 
-	private Map<String, String> merge(Map<String, String> params, Pageable pageable) {
-		Map<String, String> merged = new HashMap<>(params);
-		merged.put("sort", String.valueOf(pageable.getSort()));
-		return merged;
+	private Map<String, String> buildCacheKey(String scope, Pageable pageable) {
+		Map<String, String> key = new HashMap<>();
+		key.put("scope", scope);
+		key.put("sort", pageable.getSort().toString());
+		key.put("page", String.valueOf(pageable.getPageNumber()));
+		key.put("size", String.valueOf(pageable.getPageSize()));
+		return key;
 	}
-
-	public void onProductChanged(Long categoryId) {
-		cache.bumpVersion(categoryId != null ? "cat:" + categoryId : "all");
-	}
-
 }

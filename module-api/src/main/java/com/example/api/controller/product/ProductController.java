@@ -36,12 +36,11 @@ public class ProductController {
 	@GetMapping("/redis")
 	public ResponseEntity<ApiResponse<PageResponse<ProductResponse.GetAll>>> getAllRedis(
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestParam(required = false) String categoryId,
-		@RequestParam(required = false) String keyword
+		@RequestParam(required = false) String category
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponse.success(
-				listProductsUseCase.getAllRedis(pageable, categoryId, keyword)));
+				listProductsUseCase.getAllRedis(pageable, category)));
 	}
 
 	@GetMapping("{productId}")
