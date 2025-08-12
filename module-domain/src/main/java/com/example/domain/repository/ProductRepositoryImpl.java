@@ -45,7 +45,7 @@ public class ProductRepositoryImpl implements ProductCustomRepository {
 			.from(qProduct)
 			.leftJoin(qProduct.category, qCategory)
 			.where(where)
-			.fetchCount();
+			.fetchOne();
 
 		return new PageImpl<>(content, pageable, total == null ? 0 : total);
 	}

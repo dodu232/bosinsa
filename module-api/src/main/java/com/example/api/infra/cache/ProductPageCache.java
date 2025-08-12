@@ -43,7 +43,7 @@ public class ProductPageCache {
 	}
 
 	private String pageKey(String scope, String hash, int page, int size, long ver) {
-		return String.format("products:page:%s:%d:%d:%d", hash, page, size, ver);
+		return String.format("products:page:%s:%s:%d:%d:%d", scope, hash, page, size, ver);
 	}
 
 	public long getVersion(String scope) {
