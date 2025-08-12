@@ -15,7 +15,7 @@ public class ListProductsUseCase {
 
 	public PageResponse<ProductResponse.GetAll> getAll(Pageable pageable) {
 
-		return productFacade.getAll(pageable);
+		return productFacade.getAllProducts(pageable);
 	}
 
 	public PageResponse<ProductResponse.GetAll> getAllRedis(Pageable pageable, String category) {

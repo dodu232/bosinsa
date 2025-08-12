@@ -1,17 +1,17 @@
 package com.example.api.facade.product;
 
 import com.example.api.dto.product.ProductResponse;
-import com.example.api.infra.cache.ProductPageCache;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
 import com.example.common.response.PageResponse;
 import com.example.domain.entity.Product;
 import com.example.domain.repository.ProductRepository;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "productPages")
 public class ProductFacade {
 
 	private final ProductRepository productRepository;
-	private final ProductPageCache cache;
 
-	public PageResponse<ProductResponse.GetAll> getAll(Pageable pageable) {
+	public PageResponse<ProductResponse.GetAll> getAllProducts(Pageable pageable) {
 
 		Page<Product> page = productRepository.findAll(pageable);
 
@@ -57,25 +57,8 @@ public class ProductFacade {
 		);
 	}
 
+	@Cacheable(keyGenerator = "productPageKeyGenerator")
 	public PageResponse<ProductResponse.GetAll> getProducts(Pageable pageable, String category) {
-		String scope;
-
-		if (category == null || category.isBlank() || "all".equals(category)) {
-			scope = "all";
-		} else {
-			scope = "cat:" + category;
-		}
-
-		Map<String, String> key = buildCacheKey(scope, pageable);
-
-		// 캐시 조회
-		PageResponse<ProductResponse.GetAll> cached =
-			cache.get(scope, key, pageable.getPageNumber(), pageable.getPageSize());
-		if (cached != null) {
-			return cached;
-		}
-
-		// 없으면 DB 조회
 		Page<Product> page = productRepository.findByCategory(pageable, category);
 
 		List<ProductResponse.GetAll> list = page.stream()
@@ -87,22 +70,13 @@ public class ProductFacade {
 			))
 			.toList();
 
-		PageResponse<ProductResponse.GetAll> resp =
-			PageResponse.of(list, pageable.getPageNumber(), page.getSize(),
-				page.getTotalElements());
-
-		cache.put(scope, key, pageable.getPageNumber(), pageable.getPageSize(),
-			resp);
-
-		return resp;
+		return PageResponse.of(list, pageable.getPageNumber(), page.getSize(),
+			page.getTotalElements());
 	}
 
-	private Map<String, String> buildCacheKey(String scope, Pageable pageable) {
-		Map<String, String> key = new HashMap<>();
-		key.put("scope", scope);
-		key.put("sort", pageable.getSort().toString());
-		key.put("page", String.valueOf(pageable.getPageNumber()));
-		key.put("size", String.valueOf(pageable.getPageSize()));
-		return key;
+	@CacheEvict(allEntries = true)
+	public void invalidateAllProductPages() {
+		// 상품 품절되면 캐시 무효화
 	}
 }
+
