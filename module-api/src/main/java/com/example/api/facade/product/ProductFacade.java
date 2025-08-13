@@ -57,7 +57,7 @@ public class ProductFacade {
 		);
 	}
 
-	@Cacheable(keyGenerator = "productPageKeyGenerator")
+	@Cacheable(cacheNames = "productPages", keyGenerator = "productPageKeyGenerator")
 	public PageResponse<ProductResponse.GetAll> getProducts(Pageable pageable, String category) {
 		Page<Product> page = productRepository.findByCategory(pageable, category);
 

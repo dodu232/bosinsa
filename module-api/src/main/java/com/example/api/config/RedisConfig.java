@@ -1,5 +1,8 @@
 package com.example.api.config;
 
+import com.example.api.infra.cache.PageTtlPolicy;
+import com.example.api.infra.cache.TtlPolicy;
+import com.example.api.infra.cache.VariableTtlRedisCacheManager;
 import com.example.common.response.PageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
@@ -8,11 +11,9 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -27,47 +28,28 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisCacheManager redisCacheManager(RedisConnectionFactory cf, ObjectMapper om) {
-		Jackson2JsonRedisSerializer<PageResponse> pageRespSer =
-			new Jackson2JsonRedisSerializer<>(om, PageResponse.class);
-
-		RedisCacheConfiguration base = RedisCacheConfiguration.defaultCacheConfig()
-			.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
-				new StringRedisSerializer()))
-			.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
-				new GenericJackson2JsonRedisSerializer(om)
-			));
-
-		RedisCacheConfiguration productPagesCfg = base.serializeValuesWith(
-				RedisSerializationContext.SerializationPair.fromSerializer(pageRespSer)
-			)
-			.entryTtl(Duration.ofMinutes(1));
-
-		return RedisCacheManager.builder(cf)
-			.cacheDefaults(base)
-			.withInitialCacheConfigurations(Map.of("productPages", productPagesCfg))
-			.build();
+	public TtlPolicy ttlPolicy() {
+		return new PageTtlPolicy();
 	}
 
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate(
-		RedisConnectionFactory cf,
-		ObjectMapper objectMapper
-	) {
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
-		template.setConnectionFactory(cf);
+	public VariableTtlRedisCacheManager redisCacheManager(RedisConnectionFactory cf,
+		ObjectMapper om, TtlPolicy ttlPolicy) {
+		RedisCacheWriter writer = RedisCacheWriter.nonLockingRedisCacheWriter(cf);
 
-		StringRedisSerializer keySer = new StringRedisSerializer();
-		GenericJackson2JsonRedisSerializer valSer = new GenericJackson2JsonRedisSerializer(
-			objectMapper);
+		Jackson2JsonRedisSerializer<PageResponse> pageRespSer = new Jackson2JsonRedisSerializer<>(
+			om, PageResponse.class);
 
-		template.setKeySerializer(keySer);
-		template.setHashKeySerializer(keySer);
-		template.setValueSerializer(valSer);
-		template.setHashValueSerializer(valSer);
+		RedisCacheConfiguration base = RedisCacheConfiguration.defaultCacheConfig()
+			.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
+				new StringRedisSerializer())).serializeValuesWith(
+				RedisSerializationContext.SerializationPair.fromSerializer(pageRespSer))
+			.entryTtl(Duration.ofMinutes(1));
 
-		template.afterPropertiesSet();
-		return template;
+		Map<String, RedisCacheConfiguration> initial = Map.of("productPages", base);
+
+		return new VariableTtlRedisCacheManager(writer, base, initial, ttlPolicy);
 	}
+
 
 }
