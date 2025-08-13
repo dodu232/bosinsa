@@ -2,6 +2,7 @@ package com.example.api.config;
 
 import com.example.common.response.PageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
 import java.util.Map;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +39,9 @@ public class RedisConfig {
 			));
 
 		RedisCacheConfiguration productPagesCfg = base.serializeValuesWith(
-			RedisSerializationContext.SerializationPair.fromSerializer(pageRespSer)
-		);
+				RedisSerializationContext.SerializationPair.fromSerializer(pageRespSer)
+			)
+			.entryTtl(Duration.ofMinutes(1));
 
 		return RedisCacheManager.builder(cf)
 			.cacheDefaults(base)
