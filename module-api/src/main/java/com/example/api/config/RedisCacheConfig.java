@@ -25,4 +25,12 @@ public class RedisCacheConfig {
 			);
 		};
 	}
+
+	@Bean("cartKeyGenerator")
+	public KeyGenerator cartKeyGenerator() {
+		return (target, method, params) -> {
+			String cartId = (String) params[0];
+			return "cart:" + cartId;
+		};
+	}
 }
