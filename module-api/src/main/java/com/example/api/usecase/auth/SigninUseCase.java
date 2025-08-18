@@ -1,8 +1,8 @@
 package com.example.api.usecase.auth;
 
+import com.example.api.config.JwtUtil;
 import com.example.api.dto.auth.SigninRequest;
 import com.example.api.facade.user.UserFacade;
-import com.example.common.util.JwtUtil;
 import com.example.domain.entity.User;
 import com.example.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;

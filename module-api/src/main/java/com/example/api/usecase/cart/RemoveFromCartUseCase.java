@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AddToCartUseCase {
+public class RemoveFromCartUseCase {
 
 	private final CartFacade cartFacade;
 
-	public CartView add(String cartId, CartRequest.AddItems dto) {
+	public CartView remove(String cartId, CartRequest.DeleteItems dto) {
 
-		return cartFacade.addItem(cartId, dto.getItems());
+		return cartFacade.removeItem(cartId, dto.getProductIds());
 	}
 }

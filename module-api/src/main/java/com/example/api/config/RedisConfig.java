@@ -1,7 +1,7 @@
 package com.example.api.config;
 
-import com.example.api.dto.cart.CartResponse;
-import com.example.api.infra.cache.PageTtlPolicy;
+import com.example.api.dto.cart.CartView;
+import com.example.api.infra.cache.PageAndCartTtlPolicy;
 import com.example.api.infra.cache.TtlPolicy;
 import com.example.api.infra.cache.VariableTtlRedisCacheManager;
 import com.example.common.response.PageResponse;
@@ -30,7 +30,7 @@ public class RedisConfig {
 
 	@Bean
 	public TtlPolicy ttlPolicy() {
-		return new PageTtlPolicy();
+		return new PageAndCartTtlPolicy();
 	}
 
 	@Bean
@@ -44,7 +44,7 @@ public class RedisConfig {
 			.entryTtl(Duration.ofMinutes(1));
 
 		var pageRespSer = new Jackson2JsonRedisSerializer<>(om, PageResponse.class);
-		var cartSer = new Jackson2JsonRedisSerializer<>(om, CartResponse.class);
+		var cartSer = new Jackson2JsonRedisSerializer<>(om, CartView.class);
 
 		Map<String, RedisCacheConfiguration> initial = Map.of(
 			"productPages", base.serializeValuesWith(SerializationPair.fromSerializer(pageRespSer)),

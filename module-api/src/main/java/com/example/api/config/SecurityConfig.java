@@ -40,7 +40,8 @@ public class SecurityConfig {
 					"/api/v1/auth/social/**",
 					"/api/v1/auth/kakao/**",
 					"/api/v1/products",
-					"/api/v1/products/**"
+					"/api/v1/products/**",
+					"/api/v1/carts"
 				).permitAll()
 				.anyRequest().authenticated()
 			)

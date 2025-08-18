@@ -26,11 +26,16 @@ public class CartRequest {
 		@NotNull(message = "상품 ID는 필수입니다.")
 		private Long productId;
 
-		@NotNull(message = "옵션 ID는 필수입니다.")
-		private Long optionId; // 사이즈/색상 등
-
 		@Min(value = 1, message = "수량은 최소 1개 이상이어야 합니다.")
 		private int quantity;
+	}
+
+	@Getter
+	@NoArgsConstructor
+	public static class DeleteItems {
+
+		@NotEmpty
+		private List<Long> productIds;
 	}
 
 }
