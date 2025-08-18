@@ -1,6 +1,7 @@
 package com.example.api.config;
 
-import com.example.api.infra.cache.PageTtlPolicy;
+import com.example.api.dto.cart.CartView;
+import com.example.api.infra.cache.PageAndCartTtlPolicy;
 import com.example.api.infra.cache.TtlPolicy;
 import com.example.api.infra.cache.VariableTtlRedisCacheManager;
 import com.example.common.response.PageResponse;
@@ -15,7 +16,7 @@ import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -29,24 +30,26 @@ public class RedisConfig {
 
 	@Bean
 	public TtlPolicy ttlPolicy() {
-		return new PageTtlPolicy();
+		return new PageAndCartTtlPolicy();
 	}
 
 	@Bean
 	public VariableTtlRedisCacheManager redisCacheManager(RedisConnectionFactory cf,
 		ObjectMapper om, TtlPolicy ttlPolicy) {
+
 		RedisCacheWriter writer = RedisCacheWriter.nonLockingRedisCacheWriter(cf);
 
-		Jackson2JsonRedisSerializer<PageResponse> pageRespSer = new Jackson2JsonRedisSerializer<>(
-			om, PageResponse.class);
-
 		RedisCacheConfiguration base = RedisCacheConfiguration.defaultCacheConfig()
-			.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
-				new StringRedisSerializer())).serializeValuesWith(
-				RedisSerializationContext.SerializationPair.fromSerializer(pageRespSer))
+			.serializeKeysWith(SerializationPair.fromSerializer(new StringRedisSerializer()))
 			.entryTtl(Duration.ofMinutes(1));
 
-		Map<String, RedisCacheConfiguration> initial = Map.of("productPages", base);
+		var pageRespSer = new Jackson2JsonRedisSerializer<>(om, PageResponse.class);
+		var cartSer = new Jackson2JsonRedisSerializer<>(om, CartView.class);
+
+		Map<String, RedisCacheConfiguration> initial = Map.of(
+			"productPages", base.serializeValuesWith(SerializationPair.fromSerializer(pageRespSer)),
+			"carts", base.serializeValuesWith(SerializationPair.fromSerializer(cartSer))
+		);
 
 		return new VariableTtlRedisCacheManager(writer, base, initial, ttlPolicy);
 	}

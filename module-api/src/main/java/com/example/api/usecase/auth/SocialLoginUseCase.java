@@ -1,7 +1,7 @@
 package com.example.api.usecase.auth;
 
+import com.example.api.config.JwtUtil;
 import com.example.api.facade.auth.SocialAuthFacade;
-import com.example.common.util.JwtUtil;
 import com.example.external.social.SocialUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
