@@ -24,7 +24,7 @@ public class UserFacade {
 		userRepository.save(user);
 	}
 
-	public User findByEmail(String email) {
+	public User getByEmail(String email) {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new ApiException("존재하지 않는 이메일", ErrorType.INVALID_PARAMETER,
 				HttpStatus.BAD_REQUEST));
@@ -32,6 +32,12 @@ public class UserFacade {
 
 	public boolean existsByEmail(String email) {
 		return userRepository.existsByEmail(email);
+	}
+
+	public User getById(Long id) {
+		return userRepository.findById(id)
+			.orElseThrow(() -> new ApiException("존재하지 않는 회원번호", ErrorType.INVALID_PARAMETER,
+				HttpStatus.BAD_REQUEST));
 	}
 
 }

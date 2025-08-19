@@ -27,7 +27,7 @@ public class SocialAuthFacade {
 	public Long getOrCreateSocialUser(SocialUserInfo info, String provider) {
 		String email = info.getEmail();
 		if (userFacade.existsByEmail(email)) {
-			return userFacade.findByEmail(email).getId();
+			return userFacade.getByEmail(email).getId();
 		}
 
 		String dummyPw = userDomainService.generatedDummyPw();
@@ -40,7 +40,7 @@ public class SocialAuthFacade {
 
 			return user.getId();
 		} catch (DataIntegrityViolationException e) {
-			return userFacade.findByEmail(email).getId();
+			return userFacade.getByEmail(email).getId();
 		}
 	}
 }

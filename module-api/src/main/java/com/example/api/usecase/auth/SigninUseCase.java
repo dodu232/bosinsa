@@ -19,7 +19,7 @@ public class SigninUseCase {
 
 	@Transactional(readOnly = true)
 	public String signIn(SigninRequest dto) {
-		User user = userFacade.findByEmail(dto.getEmail());
+		User user = userFacade.getByEmail(dto.getEmail());
 
 		userDomainService.isPasswordMatch(dto.getPassword(), user.getPassword());
 
