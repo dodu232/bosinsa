@@ -41,7 +41,7 @@ public class JwtUtil {
 	public String generateToken(String userId) {
 		return Jwts.builder()
 			.subject(userId)
-			.claim("role", "USER")
+			.claim("roles", "ROLE_USER")
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + exp))
 			.signWith(key)
@@ -56,7 +56,7 @@ public class JwtUtil {
 			.build()
 			.parseSignedClaims(token).getPayload();
 
-		String roles = claims.get("role", String.class);
+		String roles = claims.get("roles", String.class);
 
 		if (roles == null) {
 			throw new ApiException("권한 정보가 없는 토큰입니다.", ErrorType.INVALID_TOKEN,
@@ -74,7 +74,8 @@ public class JwtUtil {
 
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
+			Jwts.parser().verifyWith(key).build().parseClaimsJws(token);
+
 			return true;
 		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
 			throw new ApiException("토큰이 잘못되었습니다.", ErrorType.INVALID_TOKEN,
