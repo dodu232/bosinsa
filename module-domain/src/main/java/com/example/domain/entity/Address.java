@@ -28,11 +28,26 @@ public class Address extends BaseTime {
 	private User user;
 
 	@Column(nullable = false)
+	private String recipientName;
+
+	@Column(nullable = false)
 	private String phone;
 
 	@Column(nullable = false)
 	private String address;
 
+
 	@Column(nullable = false)
 	private String addressDetail;
+
+	public static Address of(User user, String recipientName, String phone, String address,
+		String addressDetail) {
+		Address address1 = new Address();
+		address1.user = user;
+		address1.recipientName = recipientName;
+		address1.phone = phone;
+		address1.address = address;
+		address1.addressDetail = addressDetail;
+		return address1;
+	}
 }
