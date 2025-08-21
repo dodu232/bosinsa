@@ -21,6 +21,6 @@ public class SocialLoginUseCase {
 
 		Long userId = socialLoginFacade.getOrCreateSocialUser(info, provider);
 
-		return jwtUtil.generateToken(userId.toString());
+		return jwtUtil.generateToken(userId, info.getEmail(), info.getEmail());
 	}
 }

@@ -1,5 +1,7 @@
 package com.example.api.config;
 
+import com.example.api.facade.user.UserFacade;
+import com.example.api.infra.auth.CustomUserDetails;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
 import io.jsonwebtoken.Claims;
@@ -9,7 +11,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.crypto.SecretKey;
@@ -19,8 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,45 +28,39 @@ public class JwtUtil {
 	private final long exp;
 	private final SecretKey key;
 
-	public JwtUtil(
-		@Value("${jwt.secret}") String secret,
-		@Value("${jwt.expired}") long expired
-	) {
+	public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expired}") long expired,
+		UserFacade userFacade) {
 		byte[] keyBytes = Decoders.BASE64.decode(secret);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 		this.exp = expired;
 	}
 
-	public String generateToken(String userId) {
-		return Jwts.builder()
-			.subject(userId)
-			.claim("roles", "ROLE_USER")
-			.issuedAt(new Date())
-			.expiration(new Date(System.currentTimeMillis() + exp))
-			.signWith(key)
-			.compact();
+	public String generateToken(long userId, String email, String nickname) {
+		return Jwts.builder().subject(String.valueOf(userId)).claim("email", email)
+			.claim("nickname", nickname).claim("roles", List.of("ROLE_USER")).issuedAt(new Date())
+			.expiration(new Date(System.currentTimeMillis() + exp)).signWith(key).compact();
 	}
 
 	public Authentication getAuthentication(String token) {
 		validateToken(token);
 
-		Claims claims = Jwts.parser()
-			.verifyWith(key)
-			.build()
-			.parseSignedClaims(token).getPayload();
+		Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
 
-		String roles = claims.get("roles", String.class);
+		List<String> roles = claims.get("roles", List.class);
 
 		if (roles == null) {
 			throw new ApiException("권한 정보가 없는 토큰입니다.", ErrorType.INVALID_TOKEN,
 				HttpStatus.UNAUTHORIZED);
 		}
 
-		List<? extends GrantedAuthority> authorities = Arrays.stream(roles.split(","))
-			.map(SimpleGrantedAuthority::new)
-			.toList();
+		List<? extends GrantedAuthority> authorities = roles.stream()
+			.map(SimpleGrantedAuthority::new).toList();
 
-		UserDetails principal = new User(claims.getSubject(), "", authorities);
+		Long userId = Long.parseLong(claims.getSubject());
+		String email = claims.get("email", String.class);
+		String nickname = claims.get("nickname", String.class);
+
+		CustomUserDetails principal = CustomUserDetails.of(userId, email, nickname, authorities);
 
 		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 	}

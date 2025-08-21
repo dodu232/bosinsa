@@ -23,6 +23,6 @@ public class SigninUseCase {
 
 		userDomainService.isPasswordMatch(dto.getPassword(), user.getPassword());
 
-		return jwtUtil.generateToken(dto.getEmail());
+		return jwtUtil.generateToken(user.getId(), user.getEmail(), user.getNickname());
 	}
 }
