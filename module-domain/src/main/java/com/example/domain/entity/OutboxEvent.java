@@ -33,5 +33,12 @@ public class OutboxEvent extends BaseTime {
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
 	private OutBoxStatus status = OutBoxStatus.PENDING;
-	
+
+	public static OutboxEvent of(String eventType, String payloadJson) {
+		OutboxEvent e = new OutboxEvent();
+		e.eventType = eventType;
+		e.payload = payloadJson;
+		e.status = OutBoxStatus.PENDING;
+		return e;
+	}
 }
