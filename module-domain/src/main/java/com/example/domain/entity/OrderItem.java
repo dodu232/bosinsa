@@ -37,4 +37,26 @@ public class OrderItem {
 
 	@Column(nullable = false)
 	private BigDecimal price;
+
+	public static OrderItem of(Order order, Product product, int quantity, BigDecimal price) {
+		OrderItem orderItem = new OrderItem();
+		orderItem.order = order;
+		orderItem.product = product;
+		orderItem.quantity = quantity;
+		orderItem.price = price;
+		return orderItem;
+	}
+
+	public void setOrder(Order order) {
+		if (this.order == order) {
+			return;
+		}
+		if (this.order != null) {
+			this.order.getItems().remove(this);
+		}
+		this.order = order;
+		if (order != null && !order.getItems().contains(this)) {
+			order.getItems().add(this);
+		}
+	}
 }
