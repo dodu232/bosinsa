@@ -5,6 +5,7 @@ import com.example.api.dto.order.OrderResponse;
 import com.example.api.infra.auth.CustomUserDetails;
 import com.example.api.usecase.order.CreateOrderUseCase;
 import com.example.common.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,8 @@ public class OrderController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<OrderResponse.Create>> createOrder(
-		@AuthenticationPrincipal CustomUserDetails user, @RequestBody OrderRequest.Create request) {
+		@AuthenticationPrincipal CustomUserDetails user,
+		@Valid @RequestBody OrderRequest.Create request) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponse.success(createOrderUseCase.createOrder(user.getId(), request)));
 	}
