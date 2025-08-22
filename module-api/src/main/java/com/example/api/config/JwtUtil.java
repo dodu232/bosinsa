@@ -1,6 +1,5 @@
 package com.example.api.config;
 
-import com.example.api.facade.user.UserFacade;
 import com.example.api.infra.auth.CustomUserDetails;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
@@ -28,8 +27,7 @@ public class JwtUtil {
 	private final long exp;
 	private final SecretKey key;
 
-	public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expired}") long expired,
-		UserFacade userFacade) {
+	public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expired}") long expired) {
 		byte[] keyBytes = Decoders.BASE64.decode(secret);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 		this.exp = expired;

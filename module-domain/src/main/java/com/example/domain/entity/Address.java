@@ -42,12 +42,12 @@ public class Address extends BaseTime {
 
 	public static Address of(User user, String recipientName, String phone, String address,
 		String addressDetail) {
-		Address address1 = new Address();
-		address1.user = user;
-		address1.recipientName = recipientName;
-		address1.phone = phone;
-		address1.address = address;
-		address1.addressDetail = addressDetail;
-		return address1;
+		Address entity = new Address();
+		entity.user = user;
+		entity.recipientName = recipientName;
+		entity.phone = phone;
+		entity.address = address;
+		entity.addressDetail = addressDetail;
+		return entity;
 	}
 }
