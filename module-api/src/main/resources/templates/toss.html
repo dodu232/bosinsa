@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>결제위젯 샘플</title>
+
+  <link rel="stylesheet" th:href="@{/css/toss.css}" href="/css/toss.css"/>
+  <!-- Toss Payments SDK (전역 함수 제공) -->
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<div class="wrapper w-100">
+  <div class="max-w-540 w-100">
+    <div id="payment-method" class="w-100"></div>
+    <div id="agreement" class="w-100"></div>
+    <div class="btn-wrapper w-100">
+      <button id="payment-request-button" class="btn primary w-100">결제하기</button>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/toss.js}"></script>
+</body>
+</html>
