@@ -1,42 +1,71 @@
 (function () {
-  // 결제창/브랜드페이용 클라이언트 키 사용 (test_ck_*)
   const CLIENT_KEY = "test_ck_P24xLea5zVA09kKb2Gl3QAMYNwW6";
-
-  // 전역 SDK 초기화
   const tossPayments = TossPayments(CLIENT_KEY);
 
-  // 구매자 식별용 키 (테스트에선 임시 생성)
   const customerKey = "guest-" + Math.random().toString(36).slice(2);
-
-  // 결제창 객체 생성
   const payment = tossPayments.payment({customerKey});
 
-  document.getElementById("payment-request-button").addEventListener("click",
-      async () => {
-        try {
-          await payment.requestPayment({
-            method: "CARD",
-            amount: {currency: "KRW", value: 50000},
-            orderId: genId(),
-            orderName: "토스 티셔츠 외 2건",
-            successUrl: window.location.origin + "/sandbox/success",
-            failUrl: window.location.origin + "/sandbox/fail",
-            // (옵션) 결제창 타입 지정: DEFAULT=호스티드 통합창, DIRECT=개별 앱/지갑창
-            card: {
-              flowMode: "DEFAULT",
-              // flowMode가 DIRECT면 아래처럼 지정 가능
-              // easyPay: "TOSSPAY", // 혹은 cardCompany: "HYUNDAI" 등
-            },
-            customerEmail: "customer123@gmail.com",
-            customerName: "김토스",
-          });
-        } catch (e) {
-          console.error(e);
-          alert("결제 요청 중 오류가 발생했습니다.");
-        }
+  const $btn = document.getElementById("payment-request-button");
+  const $orderId = document.getElementById("orderId");
+
+  $btn.addEventListener("click", onClick);
+
+  async function onClick() {
+    // 1) 입력값 확인
+    const idVal = $orderId?.value?.trim();
+    if (!idVal) {
+      alert("orderId를 입력하세요.");
+      return;
+    }
+
+    // 버튼 잠깐 비활성화(중복 클릭 방지)
+    $btn.disabled = true;
+
+    try {
+      // 2) 주문 조회
+      const url = `/api/v1/orders/${encodeURIComponent(idVal)}`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {"Accept": "application/json"},
+        credentials: "same-origin"
       });
 
-  function genId() {
-    return "order-" + Math.random().toString(36).slice(2, 12);
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`주문 조회 실패 (${res.status}) ${text}`);
+      }
+
+      const json = await res.json();
+      const data = json?.data ?? json; // {data:{...}} 또는 {...} 모두 대응
+
+      // 서버가 주는 값 우선, 없으면 입력값 사용
+      const orderIdForPay = "orderId-" + String(data.orderId ?? idVal);
+      const orderName = data.orderName ?? "주문";
+      const amount = Number(data.amount ?? 0);
+      const email = data.buyerEmail ?? data.email ?? "";
+
+      if (!amount || !Number.isFinite(amount)) {
+        throw new Error("결제 금액(amount)이 올바르지 않습니다.");
+      }
+
+      // 3) 결제 요청
+      await payment.requestPayment({
+        method: "CARD",
+        amount: {currency: "KRW", value: amount},
+        orderId: orderIdForPay,
+        orderName: orderName,
+        successUrl: window.location.origin + "/api/v1/web/orders/success",
+        failUrl: window.location.origin + "/api/v1/web/orders/fail",
+        card: {flowMode: "DEFAULT"},
+        customerEmail: email,
+        customerName: "김토스"
+      });
+
+    } catch (e) {
+      console.error(e);
+      alert(e?.message || "결제 요청 중 오류가 발생했습니다.");
+    } finally {
+      $btn.disabled = false;
+    }
   }
 })();
