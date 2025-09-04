@@ -36,6 +36,9 @@ public class User extends BaseTime {
 	@Enumerated(EnumType.STRING)
 	private LoginProvider loginProvider;
 
+	@Column(nullable = false)
+	private int point;
+
 	public static User of(String email, String password, String nickname,
 		LoginProvider loginProvider) {
 		User user = new User();
@@ -43,6 +46,7 @@ public class User extends BaseTime {
 		user.password = password;
 		user.nickname = nickname;
 		user.loginProvider = loginProvider;
+		user.point = 0;
 		return user;
 	}
 
