@@ -38,3 +38,6 @@ out/
 
 ### domain ###
 **/src/main/generated
+
+### yml ###
+**/*-local.yml

@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '3.2.7'
+    id 'org.springframework.boot'
     id 'io.spring.dependency-management'
     id 'java'
 }
@@ -10,7 +10,9 @@ jar { enabled = false }
 dependencies {
     implementation project(':module-domain')
     implementation project(':module-common')
+    implementation project(':module-contracts')
     implementation project(':module-external')
+    implementation project(':module-messaging')
 
     // Spring Web, Security
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -20,8 +22,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3', 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -30,6 +30,14 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'io.micrometer:micrometer-observation'
+}
+
+tasks.named('bootJar') {
+    mainClass.set('com.bosinsa.moduleapi.Application')
 }
 
 tasks.withType(Test) {

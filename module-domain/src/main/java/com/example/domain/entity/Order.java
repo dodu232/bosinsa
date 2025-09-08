@@ -39,6 +39,9 @@ public class Order extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User user;
 
+	@Column(name = "user_id", nullable = false, updatable = false, insertable = false)
+	private Long userId;
+
 	@Column(nullable = false)
 	private BigDecimal amount;
 
@@ -58,8 +61,13 @@ public class Order extends BaseTime {
 		Order order = new Order();
 		order.address = address;
 		order.user = user;
+		order.userId = user.getId();
 		order.amount = amount;
 		order.status = status;
 		return order;
+	}
+
+	public void updateStatus(OrderStatus status) {
+		this.status = status;
 	}
 }
