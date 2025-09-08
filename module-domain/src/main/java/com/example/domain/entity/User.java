@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,7 @@ public class User extends BaseTime {
 	private LoginProvider loginProvider;
 
 	@Column(nullable = false)
-	private int point;
+	private BigDecimal point;
 
 	public static User of(String email, String password, String nickname,
 		LoginProvider loginProvider) {
@@ -46,8 +47,12 @@ public class User extends BaseTime {
 		user.password = password;
 		user.nickname = nickname;
 		user.loginProvider = loginProvider;
-		user.point = 0;
+		user.point = BigDecimal.ZERO;
 		return user;
+	}
+
+	public void updatePoint(BigDecimal point) {
+		this.point = point;
 	}
 
 }

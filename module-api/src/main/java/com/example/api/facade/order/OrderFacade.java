@@ -1,25 +1,28 @@
 package com.example.api.facade.order;
 
-import com.example.api.dto.order.OrderCreatedPayload;
 import com.example.api.dto.order.OrderRequest;
 import com.example.api.dto.order.OrderRequest.Item;
 import com.example.api.dto.order.OrderResponse;
+import com.example.api.dto.order.PaymentComplete;
+import com.example.api.dto.order.PaymentInitResponse;
+import com.example.api.usecase.order.CompletePaymentUseCase;
 import com.example.api.usecase.order.CreateOrderUseCase;
+import com.example.api.usecase.order.GetOrderUseCase;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
+import com.example.contracts.EventType;
+import com.example.contracts.payload.OrderCreatedEventPayload;
 import com.example.domain.entity.Address;
 import com.example.domain.entity.Order;
 import com.example.domain.entity.OrderItem;
-import com.example.domain.entity.OutboxEvent;
 import com.example.domain.entity.Product;
 import com.example.domain.entity.User;
 import com.example.domain.enums.OrderStatus;
 import com.example.domain.repository.AddressRepository;
 import com.example.domain.repository.OrderRepository;
-import com.example.domain.repository.OutBoxRepository;
 import com.example.domain.repository.ProductRepository;
 import com.example.domain.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.messaging.outbox.OutboxEventPublisher;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,14 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class OrderFacade implements CreateOrderUseCase {
+public class OrderFacade implements CreateOrderUseCase, GetOrderUseCase, CompletePaymentUseCase {
 
 	private final AddressRepository addressRepository;
 	private final OrderRepository orderRepository;
 	private final ProductRepository productRepository;
 	private final UserRepository userRepository;
-	private final OutBoxRepository outboxEventRepository;
-	private final ObjectMapper objectMapper;
+	private final OutboxEventPublisher outboxEventPublisher;
 
 	/*
 	 * 유저/주소 확인
@@ -50,7 +52,6 @@ public class OrderFacade implements CreateOrderUseCase {
 	 * 총액 계산
 	 * 재고 차감
 	 * 주문 저장
-	 * OutboxEvent 저장
 	 */
 
 	@Override
@@ -110,24 +111,75 @@ public class OrderFacade implements CreateOrderUseCase {
 		orderItems.forEach(order::addItem);
 		Order saved = orderRepository.save(order);
 
-		OrderCreatedPayload payload = new OrderCreatedPayload(saved.getId(),
-			saved.getUser().getId(), saved.getAmount(), saved.getItems().stream().map(
-			i -> new OrderCreatedPayload.Item(i.getProduct().getId(), i.getQuantity(),
-				i.getPrice())).toList(), saved.getCreatedAt());
-
-		String json;
-		try {
-			json = objectMapper.writeValueAsString(payload);
-		} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-			throw new ApiException("주문 생성 이벤트 직렬화 실패", ErrorType.INTERNAL_SERVER_ERROR,
-				HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		OutboxEvent event = OutboxEvent.of("ORDER_CREATED", json);
-		outboxEventRepository.save(event);
-
 		return OrderResponse.Create.builder().id(saved.getId())
 			.address(saved.getAddress().getAddress())
 			.addressDetail(saved.getAddress().getAddressDetail()).userId(saved.getUser().getId())
 			.amount(saved.getAmount()).status(saved.getStatus()).build();
+	}
+
+	/*
+		프론트로 order 정보 전달 (toss 결제용)
+	 */
+
+	@Override
+	public PaymentInitResponse getOrder(Long orderId) {
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new ApiException("존재하지 않는 order입니다. orderId=" + orderId,
+				ErrorType.INVALID_PARAMETER,
+				HttpStatus.BAD_REQUEST));
+
+		if (order.getStatus() == OrderStatus.CANCELLED) {
+			throw new ApiException("취소된 주문입니다. orderId = " + orderId, ErrorType.INVALID_PARAMETER,
+				HttpStatus.BAD_REQUEST);
+		}
+
+		if (order.getStatus() != OrderStatus.CREATED) {
+			throw new ApiException("이미 결제된 주문입니다. orderId = " + orderId,
+				ErrorType.INVALID_PARAMETER, HttpStatus.BAD_REQUEST);
+		}
+
+		String orderName = order.getItems().get(0).getProduct().getName();
+		int size = order.getItems().size() - 1;
+
+		String email = order.getUser().getEmail();
+
+		return PaymentInitResponse.builder()
+			.orderId(orderId.toString())
+			.orderName(orderName + " 외 " + size + " 건")
+			.amount(order.getAmount().intValue())
+			.customerEmail(email)
+			.build();
+	}
+
+	/*
+	결제 완료 후에 outbox 만들어서 kafka로 전송
+	 */
+
+	@Override
+	@Transactional
+	public void completePayment(PaymentComplete dto) {
+		Long orderId = Long.parseLong(dto.getOrderId().substring(8));
+
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new ApiException("존재하지 않는 order입니다. orderId=" + orderId,
+				ErrorType.INVALID_PARAMETER,
+				HttpStatus.BAD_REQUEST));
+
+		order.updateStatus(OrderStatus.PAID);
+
+		outboxEventPublisher.publish(
+			EventType.ORDER_CREATED,
+			OrderCreatedEventPayload.builder()
+				.orderId(order.getId())
+				.userId(order.getUser().getId())
+				.addressId(order.getAddress().getId())
+				.amount(order.getAmount())
+				.status(order.getStatus().toString())
+				.createdAt(order.getCreatedAt())
+				.updatedAt(order.getUpdatedAt())
+				.build(),
+			order.getUserId()
+		);
+
 	}
 }
