@@ -35,6 +35,7 @@ public class UserPointService {
 
 		} catch (DataIntegrityViolationException e) {
 			log.info("Skip duplicate by DB UNIQUE. eventId={}", eventId);
+			return;
 		}
 
 		BigDecimal point = amount

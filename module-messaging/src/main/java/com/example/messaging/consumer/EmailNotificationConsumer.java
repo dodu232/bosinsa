@@ -12,7 +12,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class EmailNotificationConsumer {
 	private final MailSendService mailSendService;
 	private final StringRedisTemplate redisTemplate;
 
-	@Transactional
 	@KafkaListener(topics = Topic.ORDER, groupId = "email-consumer")
 	public void onMessage(ConsumerRecord<String, String> rec) throws Exception {
 		Event<EventPayload> payload = Event.fromJson(rec.value());

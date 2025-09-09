@@ -52,7 +52,7 @@ public class User extends BaseTime {
 	}
 
 	public void updatePoint(BigDecimal point) {
-		this.point.add(point);
+		this.point = this.point.add(point);
 	}
 
 }
