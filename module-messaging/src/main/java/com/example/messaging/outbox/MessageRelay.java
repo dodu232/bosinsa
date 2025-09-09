@@ -57,8 +57,8 @@ public class MessageRelay {
 	@Scheduled(fixedDelay = 10, initialDelay = 5, timeUnit = TimeUnit.SECONDS, scheduler = "messageRelayPublishPendingEventExecutor")
 	public void publishPendingEvent() {
 		AssignedShard assignedShard = messageRelayCoordinator.assignedShard();
-		log.info("MessageRelay.publishPendingEvent assignedShard size = {}",
-			assignedShard.getShards().size());
+//		log.info("MessageRelay.publishPendingEvent assignedShard size = {}",
+//			assignedShard.getShards().size());
 		for (Long shard : assignedShard.getShards()) {
 			List<Outbox> outboxes = outBoxRepository.findAllByShardKeyAndCreatedAtLessThanEqualOrderByCreatedAtAsc(
 				shard, LocalDateTime.now().minusSeconds(10), Pageable.ofSize(100));

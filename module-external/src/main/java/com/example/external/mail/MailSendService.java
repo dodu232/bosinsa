@@ -29,7 +29,6 @@ public class MailSendService {
 			return;
 		}
 
-		// 메일 컨텐츠 조립
 		String to = user.getEmail();
 		String from = "bosinsa";
 		String subject = "bosinsa 결제 완료 알림";
@@ -43,6 +42,7 @@ public class MailSendService {
 			processedEventRepository.tryInsert("mail-" + eventId);
 		} catch (DataIntegrityViolationException e) {
 			log.info("Skip duplicate by DB UNIQUE. eventId={}", eventId);
+			return;
 		}
 
 		mailService.sendEmail(dto);
