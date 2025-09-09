@@ -1,4 +1,4 @@
-package com.example.messaging;
+package com.example.messaging.support;
 
 import java.util.List;
 import java.util.stream.LongStream;

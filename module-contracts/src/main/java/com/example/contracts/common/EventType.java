@@ -1,4 +1,4 @@
-package com.example.contracts;
+package com.example.contracts.common;
 
 import com.example.contracts.payload.OrderCancelledEventPayload;
 import com.example.contracts.payload.OrderCreatedEventPayload;

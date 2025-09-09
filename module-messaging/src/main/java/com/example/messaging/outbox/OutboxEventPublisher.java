@@ -1,11 +1,11 @@
 package com.example.messaging.outbox;
 
-import com.example.contracts.Event;
-import com.example.contracts.EventPayload;
-import com.example.contracts.EventType;
+import com.example.contracts.common.Event;
+import com.example.contracts.common.EventPayload;
+import com.example.contracts.common.EventType;
 import com.example.domain.entity.Outbox;
-import com.example.messaging.MessageRelayConstants;
-import com.example.messaging.OutboxEvent;
+import com.example.messaging.support.MessageRelayConstants;
+import com.example.messaging.support.OutboxEvent;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

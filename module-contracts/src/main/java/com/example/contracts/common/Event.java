@@ -1,4 +1,4 @@
-package com.example.contracts;
+package com.example.contracts.common;
 
 import com.example.common.dataserializer.DataSerializer;
 import lombok.Getter;

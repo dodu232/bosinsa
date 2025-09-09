@@ -1,4 +1,4 @@
-package com.example.messaging;
+package com.example.messaging.support;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

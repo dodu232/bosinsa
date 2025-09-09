@@ -1,6 +1,6 @@
 package com.example.domain.entity;
 
-import com.example.contracts.EventType;
+import com.example.contracts.common.EventType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

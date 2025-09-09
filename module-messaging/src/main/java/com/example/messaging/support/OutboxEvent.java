@@ -1,4 +1,4 @@
-package com.example.messaging;
+package com.example.messaging.support;
 
 import com.example.domain.entity.Outbox;
 import lombok.Getter;

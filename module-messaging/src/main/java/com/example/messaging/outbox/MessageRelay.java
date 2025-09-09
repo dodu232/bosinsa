@@ -1,8 +1,9 @@
-package com.example.messaging;
+package com.example.messaging.outbox;
 
 import com.example.domain.entity.Outbox;
 import com.example.domain.repository.OutBoxRepository;
-import com.example.messaging.outbox.MessageRelayCoordinator;
+import com.example.messaging.support.AssignedShard;
+import com.example.messaging.support.OutboxEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
