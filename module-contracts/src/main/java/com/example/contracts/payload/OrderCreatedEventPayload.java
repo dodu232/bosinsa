@@ -1,6 +1,6 @@
 package com.example.contracts.payload;
 
-import com.example.contracts.EventPayload;
+import com.example.contracts.common.EventPayload;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

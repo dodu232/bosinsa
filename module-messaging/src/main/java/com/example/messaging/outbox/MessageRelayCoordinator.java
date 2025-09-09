@@ -1,7 +1,7 @@
 package com.example.messaging.outbox;
 
-import com.example.messaging.AssignedShard;
-import com.example.messaging.MessageRelayConstants;
+import com.example.messaging.support.AssignedShard;
+import com.example.messaging.support.MessageRelayConstants;
 import jakarta.annotation.PreDestroy;
 import java.time.Instant;
 import java.util.List;

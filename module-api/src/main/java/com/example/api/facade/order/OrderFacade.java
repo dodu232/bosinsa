@@ -10,7 +10,7 @@ import com.example.api.usecase.order.CreateOrderUseCase;
 import com.example.api.usecase.order.GetOrderUseCase;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
-import com.example.contracts.EventType;
+import com.example.contracts.common.EventType;
 import com.example.contracts.payload.OrderCreatedEventPayload;
 import com.example.domain.entity.Address;
 import com.example.domain.entity.Order;

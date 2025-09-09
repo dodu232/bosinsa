@@ -37,7 +37,7 @@ dependencies {
 }
 
 tasks.named('bootJar') {
-    mainClass.set('com.bosinsa.moduleapi.Application')
+    mainClass.set('com.example.api.BosinsaApiApplication')
 }
 
 tasks.withType(Test) {

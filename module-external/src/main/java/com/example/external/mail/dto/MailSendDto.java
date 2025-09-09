@@ -1,4 +1,4 @@
-package com.example.external.mail;
+package com.example.external.mail.dto;
 
 import lombok.Getter;
 
