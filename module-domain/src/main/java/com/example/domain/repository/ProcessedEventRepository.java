@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProcessedEventRepository extends JpaRepository<ProcessedEvent, Long> {
+public interface ProcessedEventRepository extends JpaRepository<ProcessedEvent, String> {
 
 	@Modifying
 	@Query(value = "INSERT INTO processed_events(id) VALUES (:eventId)", nativeQuery = true)
