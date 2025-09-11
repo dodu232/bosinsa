@@ -38,4 +38,18 @@ public class OrderDailyStat {
 
 	@Column(nullable = false)
 	private LocalDateTime updatedAt;
+
+	public static OrderDailyStat of(LocalDate statDate, Long totalOrders, Long paidOrders,
+		Long canceledOrders,
+		BigDecimal totalAmount, BigDecimal aov, LocalDateTime updatedAt) {
+		OrderDailyStat stats = new OrderDailyStat();
+		stats.statDate = statDate;
+		stats.totalOrders = totalOrders;
+		stats.paidOrders = paidOrders;
+		stats.canceledOrders = canceledOrders;
+		stats.totalAmount = totalAmount;
+		stats.aov = aov;
+		stats.updatedAt = updatedAt;
+		return stats;
+	}
 }

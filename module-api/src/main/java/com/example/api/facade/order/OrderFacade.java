@@ -128,7 +128,7 @@ public class OrderFacade implements CreateOrderUseCase, GetOrderUseCase, Complet
 				ErrorType.INVALID_PARAMETER,
 				HttpStatus.BAD_REQUEST));
 
-		if (order.getStatus() == OrderStatus.CANCELLED) {
+		if (order.getStatus() == OrderStatus.CANCELED) {
 			throw new ApiException("취소된 주문입니다. orderId = " + orderId, ErrorType.INVALID_PARAMETER,
 				HttpStatus.BAD_REQUEST);
 		}

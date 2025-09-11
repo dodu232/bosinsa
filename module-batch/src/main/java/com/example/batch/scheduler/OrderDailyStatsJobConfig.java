@@ -1,5 +1,6 @@
 package com.example.batch.scheduler;
 
+import com.example.domain.entity.OrderDailyStat;
 import com.example.domain.enums.OrderStatus;
 import com.example.domain.repository.OrderDailyStatsRepository;
 import com.example.domain.repository.OrderRepository;
@@ -62,8 +63,7 @@ public class OrderDailyStatsJobConfig {
 
 			LocalDateTime from = targetDate.atStartOfDay();
 			LocalDateTime to = targetDate.plusDays(1).atStartOfDay();
-
-			// 집계 (트랜잭션 경계 내에서 수행)
+			
 			txTemplate.executeWithoutResult(tx -> {
 				long totalOrders = orderRepository.countAllBetween(from, to);
 				long paidOrders = orderRepository.countByStatusBetween(from, to, OrderStatus.PAID);
@@ -75,17 +75,16 @@ public class OrderDailyStatsJobConfig {
 					: totalAmount.divide(BigDecimal.valueOf(totalOrders), 2,
 						java.math.RoundingMode.HALF_UP);
 
-				OrderDailyStats stats = OrderDailyStats.builder()
-					.statDate(targetDate)
-					.totalOrders(totalOrders)
-					.paidOrders(paidOrders)
-					.canceledOrders(canceled)
-					.totalAmount(totalAmount)
-					.aov(aov)
-					.updatedAt(LocalDateTime.now(ZoneOffset.UTC))
-					.build();
+				OrderDailyStat stats = OrderDailyStat.of(
+					targetDate,
+					totalOrders,
+					paidOrders,
+					canceled,
+					totalAmount,
+					aov,
+					LocalDateTime.now(ZoneOffset.UTC));
 
-				statsRepository.save(stats); // PK(stat_date)라서 upsert 처럼 동작(JPA는 merge semantics)
+				statsRepository.save(stats);
 			});
 
 			return RepeatStatus.FINISHED;
