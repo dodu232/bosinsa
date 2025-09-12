@@ -1,0 +1,25 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'java'
+}
+
+jar { enabled = true }
+
+dependencies {
+    implementation project(':module-common')
+    implementation project(':module-contracts')
+    implementation project(':module-domain')
+    implementation project(':module-external')
+
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'io.micrometer:micrometer-observation'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-mail"
+
+}
+test { useJUnitPlatform() }
