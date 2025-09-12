@@ -11,11 +11,10 @@ dependencies {
     implementation project(':module-domain')
     implementation project(':module-common')
 
-    // Spring Batch / Scheduler
+    // Spring Batch
     implementation 'org.springframework.boot:spring-boot-starter-batch'
-    implementation 'org.springframework.boot:spring-boot-starter'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    runtimeOnly "com.mysql:mysql-connector-j:9.0.0"
 }
 
 tasks.withType(Test) {
