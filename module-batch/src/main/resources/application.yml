@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: bosinsa-batch
+  profiles:
+    active: local
+    include:
+      - common
+      - domain
+    group:
+      local: local, domain-local, common-local

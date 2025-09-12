@@ -25,6 +25,8 @@ dependencies {
 
     // Database driver
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    implementation "org.springframework.security:spring-security-crypto:6.3.3"
 }
 
 // Querydsl 설정부
