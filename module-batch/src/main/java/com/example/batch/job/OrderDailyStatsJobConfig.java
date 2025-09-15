@@ -5,10 +5,10 @@ import com.example.domain.enums.OrderStatus;
 import com.example.domain.repository.OrderDailyStatsRepository;
 import com.example.domain.repository.OrderRepository;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -56,9 +56,13 @@ public class OrderDailyStatsJobConfig {
 				.getJobParameters().get("targetDate");
 			LocalDate targetDate = LocalDate.parse(dateStr);
 
-			ZoneId KST = ZoneId.of("Asia/Seoul");
-			LocalDateTime from = targetDate.atStartOfDay(KST).toLocalDateTime();
-			LocalDateTime to = targetDate.plusDays(1).atStartOfDay(KST).toLocalDateTime();
+			LocalDateTime fromLdt = targetDate.atStartOfDay();
+			LocalDateTime toLdt = targetDate.plusDays(1).atStartOfDay();
+
+			ZoneId zone = ZoneId.of("Asia/Seoul");
+
+			Instant from = fromLdt.atZone(zone).toInstant();
+			Instant to = toLdt.atZone(zone).toInstant();
 
 			txTemplate.executeWithoutResult(tx -> {
 				long totalOrders = orderRepository.countAllBetween(from, to);
@@ -77,8 +81,7 @@ public class OrderDailyStatsJobConfig {
 					paidOrders,
 					canceled,
 					totalAmount,
-					aov,
-					LocalDateTime.now(ZoneOffset.UTC)
+					aov
 				);
 
 				orderDailyStatsRepository.save(stats);

@@ -3,7 +3,7 @@ package com.example.domain.repository;
 import com.example.domain.entity.Order;
 import com.example.domain.enums.OrderStatus;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,19 +13,19 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	@Query("""
-		    select count(o) from Order o
+		    select count(*) from Order o
 		    where o.createdAt >= :from and o.createdAt < :to
 		""")
-	long countAllBetween(@Param("from") LocalDateTime from,
-		@Param("to") LocalDateTime to);
+	long countAllBetween(@Param("from") Instant from,
+		@Param("to") Instant to);
 
 	@Query("""
-		    select count(o) from Order o
+		    select count(*) from Order o
 		    where o.updatedAt >= :from and o.updatedAt < :to
 		      and o.status = :status
 		""")
-	long countByStatusBetween(@Param("from") LocalDateTime from,
-		@Param("to") LocalDateTime to,
+	long countByStatusBetween(@Param("from") Instant from,
+		@Param("to") Instant to,
 		@Param("status") OrderStatus status);
 
 	@Query("""
@@ -33,6 +33,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		    from Order o
 		    where o.updatedAt >= :from and o.updatedAt < :to
 		""")
-	BigDecimal sumAmountBetween(@Param("from") LocalDateTime from,
-		@Param("to") LocalDateTime to);
+	BigDecimal sumAmountBetween(@Param("from") Instant from,
+		@Param("to") Instant to);
 }

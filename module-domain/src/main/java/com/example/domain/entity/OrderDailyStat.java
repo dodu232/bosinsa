@@ -6,7 +6,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "order_daily_stats")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderDailyStat {
+public class OrderDailyStat extends BaseTime {
 
 	@Id
 	@Column(name = "stat_date")
@@ -36,12 +35,8 @@ public class OrderDailyStat {
 	@Column(nullable = false)
 	private BigDecimal aov;
 
-	@Column(nullable = false)
-	private LocalDateTime updatedAt;
-
 	public static OrderDailyStat of(LocalDate statDate, Long totalOrders, Long paidOrders,
-		Long canceledOrders,
-		BigDecimal totalAmount, BigDecimal aov, LocalDateTime updatedAt) {
+		Long canceledOrders, BigDecimal totalAmount, BigDecimal aov) {
 		OrderDailyStat stats = new OrderDailyStat();
 		stats.statDate = statDate;
 		stats.totalOrders = totalOrders;
@@ -49,7 +44,6 @@ public class OrderDailyStat {
 		stats.canceledOrders = canceledOrders;
 		stats.totalAmount = totalAmount;
 		stats.aov = aov;
-		stats.updatedAt = updatedAt;
 		return stats;
 	}
 }

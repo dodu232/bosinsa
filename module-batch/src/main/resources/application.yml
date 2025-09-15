@@ -8,3 +8,9 @@ spring:
       - domain
     group:
       local: local, domain-local, common-local
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.type.descriptor.jdbc: TRACE
+  timezone: Asia/Seoul
