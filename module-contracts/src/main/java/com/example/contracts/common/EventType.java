@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum EventType {
 	ORDER_CREATED(OrderCreatedEventPayload.class, Topic.ORDER),
-	ORDER_CANCELLED(OrderCancelledEventPayload.class, Topic.ORDER);
+	ORDER_CANCELED(OrderCancelledEventPayload.class, Topic.ORDER);
 
 	private final Class<? extends EventPayload> payloadClass;
 	private final String topic;

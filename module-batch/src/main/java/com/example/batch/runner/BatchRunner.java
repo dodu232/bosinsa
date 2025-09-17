@@ -1,7 +1,7 @@
 package com.example.batch.runner;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
@@ -29,12 +29,12 @@ public class BatchRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		String targetDate = (targetDateArg == null || targetDateArg.isBlank())
-			? LocalDate.now(ZoneOffset.UTC).minusDays(1).toString()
+			? LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1).toString()
 			: targetDateArg;
 
 		JobParameters params = new JobParametersBuilder()
 			.addString("targetDate", targetDate)
-			.addLong("ts", System.currentTimeMillis())
+			.addLong("ts", System.currentTimeMillis(), false)
 			.toJobParameters();
 
 		log.info("Starting job=orderDailyStatsJob targetDate={}", targetDate);
