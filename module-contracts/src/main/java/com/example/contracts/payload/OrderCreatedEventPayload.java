@@ -2,7 +2,7 @@ package com.example.contracts.payload;
 
 import com.example.contracts.common.EventPayload;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class OrderCreatedEventPayload implements EventPayload {
 	private Long addressId;
 	private BigDecimal amount;
 	private String status;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+	private Instant createdAt;
+	private Instant updatedAt;
 
 }

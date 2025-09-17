@@ -32,7 +32,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		    select coalesce(sum(o.amount), 0)
 		    from Order o
 		    where o.updatedAt >= :from and o.updatedAt < :to
+			  and o.status = :status
 		""")
 	BigDecimal sumAmountBetween(@Param("from") Instant from,
-		@Param("to") Instant to);
+		@Param("to") Instant to,
+		@Param("status") OrderStatus status);
 }

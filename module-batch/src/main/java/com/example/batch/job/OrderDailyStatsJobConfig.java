@@ -69,7 +69,8 @@ public class OrderDailyStatsJobConfig {
 				long paidOrders = orderRepository.countByStatusBetween(from, to, OrderStatus.PAID);
 				long canceled = orderRepository.countByStatusBetween(from, to,
 					OrderStatus.CANCELED);
-				BigDecimal totalAmount = orderRepository.sumAmountBetween(from, to);
+				BigDecimal totalAmount = orderRepository.sumAmountBetween(from, to,
+					OrderStatus.PAID);
 
 				BigDecimal aov = (totalOrders == 0) ? BigDecimal.ZERO
 					: totalAmount.divide(BigDecimal.valueOf(totalOrders), 2,
