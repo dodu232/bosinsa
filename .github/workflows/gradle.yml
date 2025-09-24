@@ -56,12 +56,42 @@ jobs:
       - name: Test (${{ matrix.module }})
         run: ./gradlew :${{ matrix.module }}:test --no-daemon
 
+      # (디버그용) 실제로 결과가 어디에 생성됐는지 한번 출력해봄
+      - name: Peek test-results (debug)
+        if: env.changes == 'true'
+        run: |
+          set +e
+          find "${{ matrix.module }}/build/test-results" -type f -maxdepth 3 2>/dev/null || true
+          echo "---"
+          find "${{ matrix.module }}/build/reports/tests" -type f -maxdepth 3 2>/dev/null || true
+          echo "---"
+
+      # 리포트 존재 여부 탐지 (있을 때만 reporter 실행)
+      - name: Discover reports
+        if: env.changes == 'true'
+        id: discover
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          matches=(
+            "${{ matrix.module }}/build/test-results/test/TEST-"*.xml
+            "${{ matrix.module }}/build/test-results/"**"/TEST-"*.xml
+          )
+          if (( ${#matches[@]} > 0 )); then
+            echo "HAS_REPORTS=true" >> $GITHUB_ENV
+          else
+            echo "HAS_REPORTS=false" >> $GITHUB_ENV
+          fi
+
       - name: Test Report (${{ matrix.module }})
-        if: ${{ always() && env.changes == 'true' }}
+        if: ${{ always() && env.changes == 'true' && env.HAS_REPORTS == 'true' }}
         uses: dorny/test-reporter@v1
         with:
           name: "JUnit (${{ matrix.module }})"
-          path: "${{ matrix.module }}/build/test-results/test/TEST-*.xml"
+          # 여유 있게 두 패턴 모두 커버
+          path: |
+            ${{ matrix.module }}/build/test-results/test/TEST-*.xml
+            ${{ matrix.module }}/build/test-results/**/TEST-*.xml
           reporter: java-junit
           fail-on-error: false
           
