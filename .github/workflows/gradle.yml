@@ -63,7 +63,7 @@ jobs:
       # Wrapper 무결성 검증
       - name: Validate Gradle Wrapper
         if: ${{ env.changes == 'true' }}
-        uses: gradle/wrapper-validation-action@v3
+        uses: gradle/actions/wrapper-validation@v3
 
       # ❗ 변경된 모듈만 테스트 실행
       - name: Test (${{ matrix.module }})
