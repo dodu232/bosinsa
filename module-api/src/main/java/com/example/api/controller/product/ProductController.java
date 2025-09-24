@@ -30,7 +30,7 @@ public class ProductController {
 		@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(ApiResponse.success(listProductsUseCase.getAll(pageable)));
+			.body(ApiResponse.success(listProductsUseCase.getAllProducts(pageable)));
 	}
 
 	@GetMapping("/redis")

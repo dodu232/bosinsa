@@ -2,6 +2,9 @@ package com.example.api.facade.cart;
 
 import com.example.api.dto.cart.CartRequest;
 import com.example.api.dto.cart.CartView;
+import com.example.api.usecase.cart.AddToCartUseCase;
+import com.example.api.usecase.cart.RemoveFromCartUseCase;
+import com.example.api.usecase.cart.ViewCartUseCase;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
 import com.example.domain.entity.Product;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CartFacade {
+public class CartFacade implements ViewCartUseCase, AddToCartUseCase, RemoveFromCartUseCase {
 
 	private final ProductRepository productRepository;
 
@@ -39,17 +42,21 @@ public class CartFacade {
 		this.self = self;
 	}
 
+	@Override
 	@Cacheable(cacheNames = cacheName, keyGenerator = keyGenerator)
 	public CartView getCart(String cartId) {
 		return new CartView(cartId, List.of(), 0, "0", LocalDateTime.now());
 	}
 
+	@Override
 	@CachePut(cacheNames = cacheName, keyGenerator = keyGenerator)
-	public CartView addItem(String cartId, List<CartRequest.Item> reqItems) {
+	public CartView addItem(String cartId, CartRequest.AddItems dto) {
+		List<CartRequest.Item> items = dto.getItems();
+
 		CartView current = self.getCart(cartId);
 
 		Map<Long, Integer> delta = new HashMap<>();
-		for (CartRequest.Item it : reqItems) {
+		for (CartRequest.Item it : items) {
 			if (it.getQuantity() <= 0) {
 				continue;
 			}
@@ -95,7 +102,9 @@ public class CartFacade {
 	}
 
 	@CachePut(cacheNames = "carts", keyGenerator = "cartKeyGenerator")
-	public CartView removeItem(String cartId, List<Long> productIds) {
+	public CartView removeItem(String cartId, CartRequest.DeleteItems dto) {
+		List<Long> productIds = dto.getProductIds();
+
 		CartView current = self.getCart(cartId);
 
 		Set<Long> removeSet = new HashSet<>(productIds);

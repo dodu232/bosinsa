@@ -1,6 +1,8 @@
 package com.example.api.facade.product;
 
 import com.example.api.dto.product.ProductResponse;
+import com.example.api.usecase.product.GetProductDetailUseCase;
+import com.example.api.usecase.product.ListProductsUseCase;
 import com.example.common.exception.ApiException;
 import com.example.common.exception.ErrorType;
 import com.example.common.response.PageResponse;
@@ -20,10 +22,11 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "productPages")
-public class ProductFacade {
+public class ProductFacade implements GetProductDetailUseCase, ListProductsUseCase {
 
 	private final ProductRepository productRepository;
 
+	@Override
 	public PageResponse<ProductResponse.GetAll> getAllProducts(Pageable pageable) {
 
 		Page<Product> page = productRepository.findAll(pageable);
@@ -41,6 +44,7 @@ public class ProductFacade {
 			page.getTotalElements());
 	}
 
+	@Override
 	public ProductResponse.Get getProduct(String productId) {
 
 		Product product = productRepository.findById(Long.parseLong(productId))
@@ -57,8 +61,9 @@ public class ProductFacade {
 		);
 	}
 
+	@Override
 	@Cacheable(cacheNames = "productPages", keyGenerator = "productPageKeyGenerator")
-	public PageResponse<ProductResponse.GetAll> getProducts(Pageable pageable, String category) {
+	public PageResponse<ProductResponse.GetAll> getAllRedis(Pageable pageable, String category) {
 		Page<Product> page = productRepository.findByCategory(pageable, category);
 
 		List<ProductResponse.GetAll> list = page.stream()
