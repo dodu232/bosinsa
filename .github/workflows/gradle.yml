@@ -101,7 +101,7 @@ jobs:
         with:
           name: JUnit (${{ matrix.module }})
           reporter: java-junit
-          path: build/test-results/test/TEST-*.xml
+          path: ${{ matrix.module }}/build/test-results/test/TEST-*.xml
           # 빈 리포트로 잡이 실패하지 않게(변경 없음 등)
           fail-on-empty: false
           list-suites: all
