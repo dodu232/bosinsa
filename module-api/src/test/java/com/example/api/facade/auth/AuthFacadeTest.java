@@ -38,6 +38,7 @@ class AuthFacadeTest {
 		@Test
 		@DisplayName("이메일이 존재하고 비밀번호가 일치하면 토큰을 발급한다")
 		void signIn_success() {
+			// 테스트 주석
 			// given
 			SigninRequest dto = new SigninRequest("test@example.com", "rawPassword");
 			User user = User.of("test@example.com", "encodedPassword", "tester",
