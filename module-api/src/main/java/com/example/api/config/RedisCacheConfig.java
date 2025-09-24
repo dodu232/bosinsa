@@ -29,7 +29,11 @@ public class RedisCacheConfig {
 	@Bean("cartKeyGenerator")
 	public KeyGenerator cartKeyGenerator() {
 		return (target, method, params) -> {
-			String cartId = (String) params[0];
+			Object raw = params[0]; // cartId
+			if (raw == null) {
+				throw new IllegalArgumentException("cartId must not be null for cache key");
+			}
+			String cartId = String.valueOf(raw);
 			return "cart:" + cartId;
 		};
 	}

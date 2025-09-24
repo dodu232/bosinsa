@@ -6,9 +6,13 @@ import com.example.api.usecase.cart.AddToCartUseCase;
 import com.example.api.usecase.cart.RemoveFromCartUseCase;
 import com.example.api.usecase.cart.ViewCartUseCase;
 import com.example.common.response.ApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.time.Duration;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,8 +42,22 @@ public class CartController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<CartView>> addItem(
 		@CookieValue(value = "cart_id", required = false) String cartId,
-		@Valid @RequestBody CartRequest.AddItems request
+		@Valid @RequestBody CartRequest.AddItems request,
+		HttpServletResponse response
 	) {
+		String effectiveCartId = cartId;
+		if (effectiveCartId == null || effectiveCartId.isBlank()) {
+			effectiveCartId = UUID.randomUUID().toString();
+			ResponseCookie cookie = ResponseCookie.from("cart_id", effectiveCartId)
+				.httpOnly(true)
+				.secure(true)
+				.sameSite("Lax")
+				.path("/")
+				.maxAge(Duration.ofDays(30))
+				.build();
+			response.addHeader("Set-Cookie", cookie.toString());
+		}
+
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(ApiResponse.success(addToCartUseCase.addItem(cartId, request)));
 	}

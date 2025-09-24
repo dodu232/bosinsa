@@ -34,7 +34,7 @@ public class SocialAuthFacade implements SocialLoginUseCase {
 
 		Long userId = getOrCreateSocialUser(info, provider);
 
-		return jwtUtil.generateToken(userId, info.getEmail(), info.getEmail());
+		return jwtUtil.generateToken(userId, info.getEmail(), info.getNickname());
 	}
 
 	private Long getOrCreateSocialUser(SocialUserInfo info, String provider) {
