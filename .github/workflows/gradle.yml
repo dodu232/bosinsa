@@ -26,17 +26,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # PR 기준 브랜치(base branch)를 가져와서 현재 커밋과 비교
-      # 현재 매트릭스에 해당하는 모듈 디렉토리에 변경된 파일이 있으면 changes=true, 없으면 changes=false
       # 변경된 모듈만 테스트
       - name: Determine changes
+        id: diff
         run: |
           git fetch origin +refs/heads/${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
           BASE_SHA=$(git rev-parse origin/${{ github.event.pull_request.base.ref }})
-          if git diff --name-only $BASE_SHA ${{ github.sha }} | grep "^${{ matrix.module }}/"; then
+          if git diff --name-only "$BASE_SHA" "${{ github.sha }}" | grep -q "^${{ matrix.module }}/"; then
             echo "changes=true" >> $GITHUB_ENV
+            echo "changes=true"
           else
             echo "changes=false" >> $GITHUB_ENV
+            echo "changes=false"
           fi
 
       # JDK 17 설치
@@ -56,7 +57,7 @@ jobs:
         run: ./gradlew :${{ matrix.module }}:test --no-daemon
 
       - name: Test Report (${{ matrix.module }})
-        if: always()
+        if: ${{ always() && env.changes == 'true' }}
         uses: dorny/test-reporter@v1
         with:
           name: "JUnit (${{ matrix.module }})"
