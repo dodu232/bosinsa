@@ -65,7 +65,9 @@ jobs:
         if: ${{ env.changes == 'true' }}
         uses: gradle/wrapper-validation-action@v3
 
+      # ❗ 변경된 모듈만 테스트 실행
       - name: Test (${{ matrix.module }})
+        if: ${{ env.changes == 'true' }}
         run: ./gradlew :${{ matrix.module }}:test --no-daemon
 
       # (디버그용) 실제로 결과가 어디에 생성됐는지 한번 출력해봄
@@ -80,9 +82,9 @@ jobs:
           find "${{ matrix.module }}/build/reports/tests" -maxdepth 3 -type f 2>/dev/null || true
           echo "---"
 
-      # 리포트 존재 여부 탐지 (있을 때만 reporter 실행)
+      # ❗ 테스트 실패해도 리포트 탐지 단계가 실행되도록 always()
       - name: Discover reports
-        if: env.changes == 'true'
+        if: ${{ always() && env.changes == 'true' }}
         id: discover
         shell: bash
         run: |
@@ -92,11 +94,12 @@ jobs:
             "${{ matrix.module }}/build/test-results/"**"/TEST-"*.xml
           )
           if (( ${#matches[@]} > 0 )); then
-            echo "HAS_REPORTS=true" >> $GITHUB_ENV
+            echo "HAS_REPORTS=true"  >> $GITHUB_ENV
           else
             echo "HAS_REPORTS=false" >> $GITHUB_ENV
           fi
 
+      # ❗ 항상 실행 + 리포트 있을 때만 보고
       - name: Test Report (${{ matrix.module }})
         if: ${{ always() && env.changes == 'true' && env.HAS_REPORTS == 'true' }}
         uses: dorny/test-reporter@v1
@@ -106,7 +109,11 @@ jobs:
           path: |
             ${{ matrix.module }}/build/test-results/test/TEST-*.xml
             ${{ matrix.module }}/build/test-results/**/TEST-*.xml
-          fail-on-error: false
+          # 빈 리포트로 잡이 실패하지 않게(변경 없음 등)
+          fail-on-empty: false
+          list-suites: all
+          list-tests: all
+          max-annotations: 10
           
   # 배포 여부 판단(변경 감지)
   detect-api-impact:
