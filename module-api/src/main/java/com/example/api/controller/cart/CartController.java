@@ -36,21 +36,21 @@ public class CartController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<CartView>> add(
+	public ResponseEntity<ApiResponse<CartView>> addItem(
 		@CookieValue(value = "cart_id", required = false) String cartId,
 		@Valid @RequestBody CartRequest.AddItems request
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(ApiResponse.success(addToCartUseCase.add(cartId, request)));
+			.body(ApiResponse.success(addToCartUseCase.addItem(cartId, request)));
 	}
 
 	@DeleteMapping
-	public ResponseEntity<ApiResponse<CartView>> remove(
+	public ResponseEntity<ApiResponse<CartView>> removeItem(
 		@CookieValue(value = "cart_id", required = false) String cartId,
 		@Valid @RequestBody CartRequest.DeleteItems request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(ApiResponse.success(removeFromCartUseCase.remove(cartId, request)));
+			.body(ApiResponse.success(removeFromCartUseCase.removeItem(cartId, request)));
 	}
 
 }
