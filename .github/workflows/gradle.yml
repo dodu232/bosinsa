@@ -96,14 +96,12 @@ jobs:
 
       # ❗ 항상 실행 + 리포트 있을 때만 보고
       - name: Test Report (${{ matrix.module }})
-        if: ${{ always() && env.changes == 'true' && env.HAS_REPORTS == 'true' }}
+        if: always() 
         uses: dorny/test-reporter@v1
         with:
-          name: "JUnit (${{ matrix.module }})"
+          name: JUnit (${{ matrix.module }})
           reporter: java-junit
-          path: |
-            ${{ matrix.module }}/build/test-results/test/TEST-*.xml
-            ${{ matrix.module }}/build/test-results/**/TEST-*.xml
+          path: build/test-results/test/TEST-*.xml
           # 빈 리포트로 잡이 실패하지 않게(변경 없음 등)
           fail-on-empty: false
           list-suites: all
