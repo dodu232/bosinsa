@@ -43,27 +43,41 @@ jobs:
       # JDK 17 설치
       # Gradle 의존성 캐싱 -> 빌드 속도 개선
       - name: Set up JDK 17
-        if: env.changes == 'true'
+        if: ${{ env.changes == 'true' }}
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Gradle cache
+      # Gradle 캐시/스캔 설정
+      - name: Setup Gradle
+        if: ${{ env.changes == 'true' }}
         uses: gradle/actions/setup-gradle@v3
+
+      # gradlew 실행 권한 부여 (권한 문제 예방)
+      - name: Grant execute permission for gradlew
+        if: ${{ env.changes == 'true' }}
+        run: chmod +x ./gradlew
+
+      # Wrapper 무결성 검증
+      - name: Validate Gradle Wrapper
+        if: ${{ env.changes == 'true' }}
+        uses: gradle/wrapper-validation-action@v3
 
       - name: Test (${{ matrix.module }})
         run: ./gradlew :${{ matrix.module }}:test --no-daemon
 
       # (디버그용) 실제로 결과가 어디에 생성됐는지 한번 출력해봄
       - name: Peek test-results (debug)
-        if: env.changes == 'true'
+        if: ${{ always() && env.changes == 'true' }}
         run: |
           set +e
-          find "${{ matrix.module }}/build/test-results" -type f -maxdepth 3 2>/dev/null || true
+          echo "[test-results]"
+          find "${{ matrix.module }}/build/test-results" -maxdepth 3 -type f 2>/dev/null || true
           echo "---"
-          find "${{ matrix.module }}/build/reports/tests" -type f -maxdepth 3 2>/dev/null || true
+          echo "[reports/tests]"
+          find "${{ matrix.module }}/build/reports/tests" -maxdepth 3 -type f 2>/dev/null || true
           echo "---"
 
       # 리포트 존재 여부 탐지 (있을 때만 reporter 실행)
@@ -88,11 +102,10 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: "JUnit (${{ matrix.module }})"
-          # 여유 있게 두 패턴 모두 커버
+          reporter: java-junit
           path: |
             ${{ matrix.module }}/build/test-results/test/TEST-*.xml
             ${{ matrix.module }}/build/test-results/**/TEST-*.xml
-          reporter: java-junit
           fail-on-error: false
           
   # 배포 여부 판단(변경 감지)
@@ -134,7 +147,7 @@ jobs:
     # 앞선 build job이 성공해야 실행
     name: Build docker image and Push to Docker Hub (api only)
     needs: [build, detect-api-impact]
-    if: needs.detect-api-impact.outputs.should_deploy == 'true'
+    if: ${{ needs.detect-api-impact.outputs.should_deploy == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
