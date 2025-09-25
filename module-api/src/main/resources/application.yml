@@ -23,5 +23,3 @@ spring:
 jwt:
   secret: 1edUaaGpfy135hntJVinhw7gM0nNfM2SPfbDiWEsQtbBYtR8VQxyRP2ooyOm/3tolC/Ok3gW3hr8Haztvs7XLQ==
   expired: 36000000
-
-# pr 테스트 중

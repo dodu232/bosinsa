@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,7 +24,8 @@ public class EmailNotificationConsumer {
 	private final StringRedisTemplate redisTemplate;
 
 	@KafkaListener(topics = Topic.ORDER, groupId = "email-consumer")
-	public void onMessage(ConsumerRecord<String, String> rec) throws Exception {
+	@RetryableTopic(attempts = "5", backoff = @Backoff(delay = 1000, multiplier = 2), dltTopicSuffix = ".dlt")
+	public void onMessage(ConsumerRecord<String, String> rec) {
 		Event<EventPayload> payload = Event.fromJson(rec.value());
 
 		if (payload == null) {
