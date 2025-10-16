@@ -18,12 +18,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class EmailNotificationConsumer {
+public class EmailSendConsumer {
 
 	private final MailSendService mailSendService;
 	private final StringRedisTemplate redisTemplate;
 
-	@KafkaListener(topics = Topic.ORDER, groupId = "email-consumer")
+	@KafkaListener(topics = Topic.ORDER, groupId = "order-email-group")
 	@RetryableTopic(attempts = "5", backoff = @Backoff(delay = 1000, multiplier = 2), dltTopicSuffix = ".dlt")
 	public void onMessage(ConsumerRecord<String, String> rec) {
 		Event<EventPayload> payload = Event.fromJson(rec.value());
