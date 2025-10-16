@@ -7,6 +7,16 @@
 기능 확장과 유지보수를 용이하게 하기 위해 **7개 모듈로 구성된 멀티모듈 구조**를 설계했으며,  
 **Kafka + Outbox 패턴**을 통해 트랜잭션 정합성과 이벤트 처리 신뢰성을 확보했습니다.
 
+📚 **기술 설계 & 트러블슈팅 기록**
+- [Bosinsa 멀티모듈 트러블 슈팅](https://velog.io/@dodudong/Bosinsa-%EB%A9%80%ED%8B%B0%EB%AA%A8%EB%93%88-%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
+- [Spring Boot 멀티모듈 + Docker Compose 실전 적용기](https://velog.io/@dodudong/Spring-Boot-%EB%A9%80%ED%8B%B0%EB%AA%A8%EB%93%88-Docker-Compose-%EC%8B%A4%EC%A0%84-%EC%A0%81%EC%9A%A9%EA%B8%B0)
+- [Spring 멀티모듈 소셜 로그인 & Feign 전략 패턴 적용기](https://velog.io/@dodudong/Spring-%EB%A9%80%ED%8B%B0%EB%AA%A8%EB%93%88-%EC%8B%A4%EC%A0%84-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8-Feign-%EC%A0%84%EB%9E%B5%ED%8C%A8%ED%84%B4)
+- [페이지네이션 + Redis 캐시 + 동적 TTL 적용기](https://velog.io/@dodudong/%ED%8E%98%EC%9D%B4%EC%A7%80%EB%84%A4%EC%9D%B4%EC%85%98-Redis-%EC%BA%90%EC%8B%9C-%EB%8F%99%EC%A0%81-TTL-%EC%A0%81%EC%9A%A9%EA%B8%B0)
+- [장바구니 기능 개발기 (Spring Boot + Redis)](https://velog.io/@dodudong/%EC%9E%A5%EB%B0%94%EA%B5%AC%EB%8B%88-%EA%B8%B0%EB%8A%A5-%EA%B0%9C%EB%B0%9C%EA%B8%B0-Spring-Boot-Redis)
+- [Kafka 이벤트 발행을 위한 공통 모듈 설계기](https://velog.io/@dodudong/Kafka-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EB%B0%9C%ED%96%89%EC%9D%84-%EC%9C%84%ED%95%9C-%EA%B3%B5%ED%86%B5-%EB%AA%A8%EB%93%88-%EC%84%A4%EA%B3%84%EA%B8%B0)
+- [카프카 기반 결제 완료 후처리 (포인트 적립 & 이메일 발송)](https://velog.io/@dodudong/%EC%B9%B4%ED%94%84%EC%B9%B4-%EA%B8%B0%EB%B0%98-%EA%B2%B0%EC%A0%9C-%EC%99%84%EB%A3%8C-%ED%9B%84%EC%B2%98%EB%A6%AC-%ED%8F%AC%EC%9D%B8%ED%8A%B8-%EC%A0%81%EB%A6%BD-%EC%9D%B4%EB%A9%94%EC%9D%BC-%EB%B0%9C%EC%86%A1)
+- [결제 완료 메일 전송하기 - Spring Boot 기반 알림 시스템](https://velog.io/@dodudong/%EA%B2%B0%EC%A0%9C-%EC%99%84%EB%A3%8C-%EB%A9%94%EC%9D%BC-%EC%A0%84%EC%86%A1%ED%95%98%EA%B8%B0-Spring-Boot-%EA%B8%B0%EB%B0%98-%EC%95%8C%EB%A6%BC-%EC%8B%9C%EC%8A%A4%ED%85%9C)
+
 ---
 
 ## 🎯 프로젝트 개요
